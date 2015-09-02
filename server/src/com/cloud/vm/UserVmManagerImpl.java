@@ -3621,7 +3621,9 @@ public class UserVmManagerImpl extends ManagerBase implements UserVmManager, Vir
             VirtualMachineTO vmTO = startAns.getVirtualMachine();
             for (NicTO nicTO : vmTO.getNics()) {
                 if (nicTO.getType() == TrafficType.Guest) {
-                    returnedIp = nicTO.getIp();
+                    if (nicTO.getIp() != null) {
+                        returnedIp = nicTO.getIp().getHostAddress();
+                    }
                 }
             }
         }

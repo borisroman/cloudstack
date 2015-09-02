@@ -53,7 +53,11 @@ public class SetNetworkAclConfigItem extends AbstractConfigItemFacade {
         final String[] aclRules = rules[0];
         final NicTO nic = command.getNic();
         final String dev = "eth" + nic.getDeviceId();
-        final String netmask = Long.toString(NetUtils.getCidrSize(nic.getNetmask()));
+        String netmask = null;
+
+        if (nic.getNetmask() != null) {
+            netmask = Long.toString(NetUtils.getCidrSize(nic.getNetmask().getHostAddress()));
+        }
 
         final List<AclRule> ingressRules = new ArrayList<AclRule>();
         final List<AclRule> egressRules = new ArrayList<AclRule>();
@@ -92,7 +96,12 @@ public class SetNetworkAclConfigItem extends AbstractConfigItemFacade {
             }
         }
 
-        final NetworkACL networkACL = new NetworkACL(dev, nic.getMac(), privateGw != null, nic.getIp(), netmask, ingressRules.toArray(new AclRule[ingressRules.size()]),
+        String ipAddress = null;
+        if (nic.getIp() != null) {
+            ipAddress = nic.getIp().getHostAddress();
+        }
+
+        final NetworkACL networkACL = new NetworkACL(dev, nic.getMac(), privateGw != null, ipAddress, netmask, ingressRules.toArray(new AclRule[ingressRules.size()]),
                 egressRules.toArray(new AclRule[egressRules.size()]));
 
         return generateConfigItems(networkACL);

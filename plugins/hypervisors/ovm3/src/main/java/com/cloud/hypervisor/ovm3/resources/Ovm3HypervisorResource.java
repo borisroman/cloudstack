@@ -26,14 +26,13 @@ import javax.ejb.Local;
 import javax.inject.Inject;
 import javax.naming.ConfigurationException;
 
-import org.apache.log4j.Logger;
-
 import org.apache.cloudstack.storage.command.AttachCommand;
 import org.apache.cloudstack.storage.command.CopyCommand;
 import org.apache.cloudstack.storage.command.CreateObjectCommand;
 import org.apache.cloudstack.storage.command.DeleteCommand;
 import org.apache.cloudstack.storage.command.DettachCommand;
 import org.apache.cloudstack.storage.command.StorageSubSystemCommand;
+import org.apache.log4j.Logger;
 
 import com.cloud.agent.IAgentControl;
 import com.cloud.agent.api.Answer;
@@ -461,7 +460,9 @@ public class Ovm3HypervisorResource extends ServerResourceBase implements
                 String controlIp = null;
                 for (NicTO nic : vmSpec.getNics()) {
                     if (nic.getType() == TrafficType.Control) {
-                        controlIp = nic.getIp();
+                        if (nic.getIp() != null) {
+                            controlIp = nic.getIp().getHostAddress();
+                        }
                     }
                 }
                 /* fix is in cloudstack.py for xend restart timer */

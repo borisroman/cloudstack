@@ -39,10 +39,15 @@ public class SetGuestNetworkConfigItem extends AbstractConfigItemFacade {
         final NicTO nic = command.getNic();
         final String routerGIP = command.getAccessDetail(NetworkElementCommand.ROUTER_GUEST_IP);
         final String gateway = command.getAccessDetail(NetworkElementCommand.GUEST_NETWORK_GATEWAY);
-        final String cidr = Long.toString(NetUtils.getCidrSize(nic.getNetmask()));
-        final String netmask = nic.getNetmask();
+        String cidr = null;
+        String netmask = null;
         final String domainName = command.getNetworkDomain();
         String dns = command.getDefaultDns1();
+
+        if (nic.getNetmask() != null) {
+            cidr = Long.toString(NetUtils.getCidrSize(nic.getNetmask().getHostAddress()));
+            netmask = nic.getNetmask().getHostAddress();
+        }
 
         if (dns == null || dns.isEmpty()) {
             dns = command.getDefaultDns2();

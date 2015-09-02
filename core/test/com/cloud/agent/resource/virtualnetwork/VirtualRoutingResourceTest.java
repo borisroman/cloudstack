@@ -23,6 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -469,8 +471,18 @@ public class VirtualRoutingResourceTest implements VirtualRouterDeployer {
         acls.add(new NetworkACLTO(3, "65", "ALL", 0, 0, false, false, cidrs, -1, -1, TrafficType.Egress, true, 3));
         final NicTO nic = new NicTO();
         nic.setMac("01:23:45:67:89:AB");
-        nic.setIp("192.168.1.1");
-        nic.setNetmask("255.255.255.0");
+
+        InetAddress ipAddress = null;
+        InetAddress netmask = null;
+
+        try {
+            ipAddress = InetAddress.getByName("192.168.1.1");
+            netmask = InetAddress.getByName("255.255.255.0");
+        } catch (UnknownHostException e) {
+            fail();
+        }
+        nic.setIp(ipAddress);
+        nic.setNetmask(netmask);
         final SetNetworkACLCommand cmd = new SetNetworkACLCommand(acls, nic);
         cmd.setAccessDetail(NetworkElementCommand.ROUTER_NAME, ROUTERNAME);
 
@@ -518,8 +530,19 @@ public class VirtualRoutingResourceTest implements VirtualRouterDeployer {
     protected SetupGuestNetworkCommand generateSetupGuestNetworkCommand() {
         final NicTO nic = new NicTO();
         nic.setMac("01:23:45:67:89:AB");
-        nic.setIp("10.1.1.1");
-        nic.setNetmask("255.255.255.0");
+
+        InetAddress ipAddress = null;
+        InetAddress netmask = null;
+
+        try {
+            ipAddress = InetAddress.getByName("10.1.1.1");
+            netmask = InetAddress.getByName("255.255.255.0");
+        } catch (UnknownHostException e) {
+            fail();
+        }
+
+        nic.setIp(ipAddress);
+        nic.setNetmask(netmask);
 
         final SetupGuestNetworkCommand cmd = new SetupGuestNetworkCommand("10.1.1.10-10.1.1.20", "cloud.test", false, "8.8.8.8", "8.8.4.4", true, nic);
         cmd.setAccessDetail(NetworkElementCommand.ROUTER_GUEST_IP, "10.1.1.2");
@@ -886,7 +909,17 @@ public class VirtualRoutingResourceTest implements VirtualRouterDeployer {
         final LoadBalancerTO[] arrayLbs = new LoadBalancerTO[lbs.size()];
         lbs.toArray(arrayLbs);
         final NicTO nic = new NicTO();
-        nic.setIp("10.1.10.2");
+
+        InetAddress ipAddress = null;
+
+        try {
+            ipAddress = InetAddress.getByName("10.1.10.2");
+        } catch (UnknownHostException e) {
+            fail();
+        }
+
+        nic.setIp(ipAddress);
+
         final LoadBalancerConfigCommand cmd = new LoadBalancerConfigCommand(arrayLbs, "64.10.2.10", "10.1.10.2", "192.168.1.2", nic, Long.valueOf(1), "1000", false);
         cmd.setAccessDetail(NetworkElementCommand.ROUTER_IP, "10.1.10.2");
         cmd.setAccessDetail(NetworkElementCommand.ROUTER_NAME, ROUTERNAME);

@@ -16,6 +16,8 @@
 // under the License.
 package com.cloud.hypervisor.hyperv.guru;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -116,11 +118,54 @@ public class HypervGuru extends HypervisorGuruBase implements HypervisorGuru {
                 // creating the VR with extra nics (actual nics(3) + extra nics) will be 8
                 for(; i < MaxNicSupported; i++) {
                     NicTO nicTo = new NicTO();
+
+                    /**
+                     * TODO The following will be removed when the NicProfile class is being converted from String to InetAddress.
+                     */
+                    InetAddress ipAddress = null;
+                    InetAddress netmask = null;
+                    InetAddress dns1 = null;
+                    InetAddress dns2 = null;
+                    InetAddress gatewayProfile = null;
+                    InetAddress gatewayNetwork = null;
+
+                    try {
+                        ipAddress = InetAddress.getByName("0.0.0.0");
+                    } catch (UnknownHostException e) {
+                        s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+                    }
+                    try {
+                        netmask = InetAddress.getByName("255.255.255.255");
+                    } catch (UnknownHostException e) {
+                        s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+                    }
+                    try {
+                        dns1 = InetAddress.getByName(profile.getIPv4Dns1());
+                    } catch (UnknownHostException e) {
+                        s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+                    }
+                    try {
+                        dns2 = InetAddress.getByName(profile.getIPv4Dns2());
+                    } catch (UnknownHostException e) {
+                        s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+                    }
+                    try {
+                        gatewayProfile = InetAddress.getByName(publicNicProfile.getIPv4Gateway());
+                    } catch (UnknownHostException e) {
+                        s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+                    }
+                    try {
+                        gatewayNetwork = InetAddress.getByName(network.getGateway());
+                    } catch (UnknownHostException e) {
+                        s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+                    }
+
+
                     nicTo.setDeviceId(deviceId++);
                     nicTo.setBroadcastType(BroadcastDomainType.Vlan);
                     nicTo.setType(TrafficType.Public);
-                    nicTo.setIp("0.0.0.0");
-                    nicTo.setNetmask("255.255.255.255");
+                    nicTo.setIp(ipAddress);
+                    nicTo.setNetmask(netmask);
                     nicTo.setName(profile.getName());
 
                     try {
@@ -129,12 +174,12 @@ public class HypervGuru extends HypervisorGuruBase implements HypervisorGuru {
                     } catch (InsufficientAddressCapacityException e) {
                         throw new CloudRuntimeException("unable to allocate mac address on network: " + networkId);
                     }
-                    nicTo.setDns1(profile.getIPv4Dns1());
-                    nicTo.setDns2(profile.getIPv4Dns2());
+                    nicTo.setDns1(dns1);
+                    nicTo.setDns2(dns2);
                     if (publicNicProfile != null && publicNicProfile.getIPv4Gateway() != null) {
-                        nicTo.setGateway(publicNicProfile.getIPv4Gateway());
+                        nicTo.setGateway(gatewayProfile);
                     } else {
-                        nicTo.setGateway(network.getGateway());
+                        nicTo.setGateway(gatewayNetwork);
                     }
                     nicTo.setDefaultNic(false);
                     nicTo.setBroadcastUri(profile.getBroadCastUri());

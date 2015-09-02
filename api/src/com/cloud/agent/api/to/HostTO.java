@@ -16,9 +16,16 @@
 // under the License.
 package com.cloud.agent.api.to;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import org.apache.log4j.Logger;
+
 import com.cloud.host.Host;
 
 public class HostTO {
+    private static final Logger s_logger = Logger.getLogger(HostTO.class);
+
     private String guid;
     private NetworkTO privateNetwork;
     private NetworkTO publicNetwork;
@@ -30,15 +37,69 @@ public class HostTO {
 
     public HostTO(Host vo) {
         guid = vo.getGuid();
-        privateNetwork = new NetworkTO(vo.getPrivateIpAddress(), vo.getPrivateNetmask(), vo.getPrivateMacAddress());
+
+        /**
+         * TODO The following will be removed when the VO classes are being converted from String to InetAddress.
+         */
+        InetAddress privateIpAddress = null;
+        InetAddress privateNetmask = null;
+        InetAddress publicIpAddress = null;
+        InetAddress publicNetmask = null;
+        InetAddress storageIpAddress = null;
+        InetAddress storageNetmask = null;
+        InetAddress storageIpAddress2 = null;
+        InetAddress storageNetmask2 = null;
+
+        try {
+            privateIpAddress = InetAddress.getByName(vo.getPrivateIpAddress());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+        try {
+            privateNetmask = InetAddress.getByName(vo.getPrivateNetmask());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+        try {
+            publicIpAddress = InetAddress.getByName(vo.getPublicIpAddress());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+        try {
+            publicNetmask = InetAddress.getByName(vo.getPublicNetmask());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+        try {
+            storageIpAddress = InetAddress.getByName(vo.getStorageIpAddress());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+        try {
+            storageNetmask = InetAddress.getByName(vo.getStorageNetmask());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+        try {
+            storageIpAddress2 = InetAddress.getByName(vo.getStorageIpAddressDeux());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+        try {
+            storageNetmask2 = InetAddress.getByName(vo.getStorageNetmaskDeux());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+
+        privateNetwork = new NetworkTO(privateIpAddress, privateNetmask, vo.getPrivateMacAddress());
         if (vo.getPublicIpAddress() != null) {
-            publicNetwork = new NetworkTO(vo.getPublicIpAddress(), vo.getPublicNetmask(), vo.getPublicMacAddress());
+            publicNetwork = new NetworkTO(publicIpAddress, publicNetmask, vo.getPublicMacAddress());
         }
         if (vo.getStorageIpAddress() != null) {
-            storageNetwork1 = new NetworkTO(vo.getStorageIpAddress(), vo.getStorageNetmask(), vo.getStorageMacAddress());
+            storageNetwork1 = new NetworkTO(storageIpAddress, storageNetmask, vo.getStorageMacAddress());
         }
         if (vo.getStorageIpAddressDeux() != null) {
-            storageNetwork2 = new NetworkTO(vo.getStorageIpAddressDeux(), vo.getStorageNetmaskDeux(), vo.getStorageMacAddressDeux());
+            storageNetwork2 = new NetworkTO(storageIpAddress2, storageNetmask2, vo.getStorageMacAddressDeux());
         }
     }
 

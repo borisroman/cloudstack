@@ -16,6 +16,7 @@
 // under the License.
 package com.cloud.agent.api.to;
 
+import java.net.InetAddress;
 import java.util.List;
 
 public class NicTO extends NetworkTO {
@@ -25,7 +26,7 @@ public class NicTO extends NetworkTO {
     boolean defaultNic;
     boolean pxeDisable;
     String nicUuid;
-    List<String> nicSecIps;
+    List<InetAddress> nicSecIps;
 
     public NicTO() {
         super();
@@ -82,11 +83,11 @@ public class NicTO extends NetworkTO {
         return new StringBuilder("[Nic:").append(type).append("-").append(ip).append("-").append(broadcastUri).append("]").toString();
     }
 
-    public void setNicSecIps(List<String> secIps) {
+    public void setNicSecIps(List<InetAddress> secIps) {
         this.nicSecIps = secIps;
     }
 
-    public List<String> getNicSecIps() {
+    public List<InetAddress> getNicSecIps() {
         return nicSecIps;
     }
 

@@ -19,6 +19,7 @@
 
 package com.cloud.hypervisor.xenserver.resource.wrapper.xenbase;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -161,18 +162,26 @@ public final class CitrixStartCommandWrapper extends CommandWrapper<StartCommand
                     final NicTO[] nics = vmSpec.getNics();
                     for (final NicTO nic : nics) {
                         if (nic.isSecurityGroupEnabled() || nic.getIsolationUri() != null && nic.getIsolationUri().getScheme().equalsIgnoreCase(IsolationType.Ec2.toString())) {
-                            final List<String> nicSecIps = nic.getNicSecIps();
+                            final List<InetAddress> nicSecIps = nic.getNicSecIps();
                             String secIpsStr;
                             final StringBuilder sb = new StringBuilder();
                             if (nicSecIps != null) {
-                                for (final String ip : nicSecIps) {
-                                    sb.append(ip).append(":");
+                                for (final InetAddress ip : nicSecIps) {
+                                    sb.append(ip.getHostAddress()).append(":");
                                 }
                                 secIpsStr = sb.toString();
                             } else {
                                 secIpsStr = "0:";
                             }
-                            result = citrixResourceBase.callHostPlugin(conn, "vmops", "default_network_rules", "vmName", vmName, "vmIP", nic.getIp(), "vmMAC", nic.getMac(),
+                            /**
+                             * TODO Remove the following code on the next iteration of the Network Refactor.
+                             */
+                            String ipAddress = null;
+                            if (nic.getIp() != null) {
+                                ipAddress = nic.getIp().getHostAddress();
+                            }
+
+                            result = citrixResourceBase.callHostPlugin(conn, "vmops", "default_network_rules", "vmName", vmName, "vmIP", ipAddress, "vmMAC", nic.getMac(),
                                     "vmID", Long.toString(vmSpec.getId()), "secIps", secIpsStr);
 
                             if (result == null || result.isEmpty() || !Boolean.parseBoolean(result)) {

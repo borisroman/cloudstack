@@ -19,6 +19,7 @@
 
 package com.cloud.agent.resource.virtualnetwork.facade;
 
+import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,7 +42,12 @@ public class LoadBalancerConfigItem extends AbstractConfigItemFacade {
         final LoadBalancerConfigurator cfgtr = new HAProxyConfigurator();
         final String[] configuration = cfgtr.generateConfiguration(command);
 
-        String routerIp = command.getNic().getIp();
+        String routerIp = null;
+        InetAddress ipAddress = command.getNic().getIp();
+
+        if(ipAddress != null) {
+            routerIp = ipAddress.getHostAddress();
+        }
         if (command.getVpcId() == null) {
             routerIp = cmd.getAccessDetail(NetworkElementCommand.ROUTER_IP);
         }

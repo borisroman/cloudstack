@@ -19,6 +19,7 @@
 
 package com.cloud.hypervisor.kvm.resource.wrapper;
 
+import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -87,12 +88,12 @@ public final class LibvirtStartCommandWrapper extends CommandWrapper<StartComman
                         libvirtComputingResource.configureDefaultNetworkRulesForSystemVm(conn, vmName);
                         break;
                     } else {
-                        final List<String> nicSecIps = nic.getNicSecIps();
+                        final List<InetAddress> nicSecIps = nic.getNicSecIps();
                         String secIpsStr;
                         final StringBuilder sb = new StringBuilder();
                         if (nicSecIps != null) {
-                            for (final String ip : nicSecIps) {
-                                sb.append(ip).append(":");
+                            for (final InetAddress ip : nicSecIps) {
+                                sb.append(ip.getHostAddress()).append(":");
                             }
                             secIpsStr = sb.toString();
                         } else {
@@ -109,7 +110,9 @@ public final class LibvirtStartCommandWrapper extends CommandWrapper<StartComman
                 String controlIp = null;
                 for (final NicTO nic : nics) {
                     if (nic.getType() == TrafficType.Control) {
-                        controlIp = nic.getIp();
+                        if (nic.getIp() != null) {
+                            controlIp = nic.getIp().getHostAddress();
+                        }
                         break;
                     }
                 }

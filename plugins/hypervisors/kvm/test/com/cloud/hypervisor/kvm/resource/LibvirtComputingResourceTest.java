@@ -32,6 +32,7 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -4818,7 +4819,8 @@ public class LibvirtComputingResourceTest {
         final NicTO[] nics = new NicTO[]{nic};
 
         final String vmName = "Test";
-        final String controlIp = "127.0.0.1";
+
+        final InetAddress controlIp = InetAddress.getLoopbackAddress();
 
         when(libvirtComputingResource.getStoragePoolMgr()).thenReturn(storagePoolMgr);
         when(vmSpec.getNics()).thenReturn(nics);
@@ -4850,7 +4852,7 @@ public class LibvirtComputingResourceTest {
             when(nic.getIp()).thenReturn(controlIp);
             when(nic.getType()).thenReturn(TrafficType.Control);
             when(libvirtComputingResource.getVirtRouterResource()).thenReturn(virtRouterResource);
-            when(virtRouterResource.connect(controlIp, 1, 5000)).thenReturn(true);
+            when(virtRouterResource.connect(controlIp.getHostAddress(), 1, 5000)).thenReturn(true);
         } catch (final InternalErrorException e) {
             fail(e.getMessage());
         } catch (final LibvirtException e) {
@@ -4890,7 +4892,7 @@ public class LibvirtComputingResourceTest {
         final NicTO[] nics = new NicTO[]{nic};
 
         final String vmName = "Test";
-        final String controlIp = "127.0.0.1";
+        final InetAddress controlIp = InetAddress.getLoopbackAddress();
 
         when(libvirtComputingResource.getStoragePoolMgr()).thenReturn(storagePoolMgr);
         when(vmSpec.getNics()).thenReturn(nics);
@@ -4926,7 +4928,7 @@ public class LibvirtComputingResourceTest {
             when(nic.getIp()).thenReturn(controlIp);
             when(nic.getType()).thenReturn(TrafficType.Control);
             when(libvirtComputingResource.getVirtRouterResource()).thenReturn(virtRouterResource);
-            when(virtRouterResource.connect(controlIp, 1, 5000)).thenReturn(true);
+            when(virtRouterResource.connect(controlIp.getHostAddress(), 1, 5000)).thenReturn(true);
         } catch (final InternalErrorException e) {
             fail(e.getMessage());
         } catch (final LibvirtException e) {

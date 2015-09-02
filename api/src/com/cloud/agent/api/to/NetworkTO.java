@@ -16,6 +16,7 @@
 // under the License.
 package com.cloud.agent.api.to;
 
+import java.net.InetAddress;
 import java.net.URI;
 
 import com.cloud.network.Networks.BroadcastDomainType;
@@ -26,12 +27,12 @@ import com.cloud.network.Networks.TrafficType;
  */
 public class NetworkTO {
     protected String uuid;
-    protected String ip;
-    protected String netmask;
-    protected String gateway;
+    protected InetAddress ip;
+    protected InetAddress netmask;
+    protected InetAddress gateway;
     protected String mac;
-    protected String dns1;
-    protected String dns2;
+    protected InetAddress dns1;
+    protected InetAddress dns2;
     protected BroadcastDomainType broadcastType;
     protected TrafficType type;
     protected URI broadcastUri;
@@ -58,15 +59,15 @@ public class NetworkTO {
         this.broadcastType = broadcastType;
     }
 
-    public void setIp(String ip) {
+    public void setIp(InetAddress ip) {
         this.ip = ip;
     }
 
-    public void setNetmask(String netmask) {
+    public void setNetmask(InetAddress netmask) {
         this.netmask = netmask;
     }
 
-    public void setGateway(String gateway) {
+    public void setGateway(InetAddress gateway) {
         this.gateway = gateway;
     }
 
@@ -74,11 +75,11 @@ public class NetworkTO {
         this.mac = mac;
     }
 
-    public void setDns1(String dns1) {
+    public void setDns1(InetAddress dns1) {
         this.dns1 = dns1;
     }
 
-    public void setDns2(String dns2) {
+    public void setDns2(InetAddress dns2) {
         this.dns2 = dns2;
     }
 
@@ -105,7 +106,7 @@ public class NetworkTO {
      * @param netmask netmask
      * @param mac mac address
      */
-    public NetworkTO(String ip, String netmask, String mac) {
+    public NetworkTO(InetAddress ip, InetAddress netmask, String mac) {
         this(ip, netmask, mac, null, null, null);
     }
 
@@ -121,7 +122,7 @@ public class NetworkTO {
      * @param dns1
      * @param dns2
      */
-    public NetworkTO(String ip, String netmask, String mac, String gateway, String dns1, String dns2) {
+    public NetworkTO(InetAddress ip, InetAddress netmask, String mac, InetAddress gateway, InetAddress dns1, InetAddress dns2) {
         this.ip = ip;
         this.netmask = netmask;
         this.mac = mac;
@@ -130,15 +131,15 @@ public class NetworkTO {
         this.dns2 = dns2;
     }
 
-    public String getIp() {
+    public InetAddress getIp() {
         return ip;
     }
 
-    public String getNetmask() {
+    public InetAddress getNetmask() {
         return netmask;
     }
 
-    public String getGateway() {
+    public InetAddress getGateway() {
         return gateway;
     }
 
@@ -146,11 +147,11 @@ public class NetworkTO {
         return mac;
     }
 
-    public String getDns1() {
+    public InetAddress getDns1() {
         return dns1;
     }
 
-    public String getDns2() {
+    public InetAddress getDns2() {
         return dns2;
     }
 

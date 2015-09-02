@@ -3134,7 +3134,7 @@ public class LibvirtComputingResource extends ServerResourceBase implements Serv
         cmd.add("--vmname", vmName);
         cmd.add("--vmid", vmId.toString());
         if (nic.getIp() != null) {
-            cmd.add("--vmip", nic.getIp());
+            cmd.add("--vmip", nic.getIp().getHostAddress());
         }
         cmd.add("--vmmac", nic.getMac());
         cmd.add("--vif", vif);
@@ -3165,7 +3165,9 @@ public class LibvirtComputingResource extends ServerResourceBase implements Serv
         cmd.add("post_default_network_rules");
         cmd.add("--vmname", vmName);
         cmd.add("--vmid", vmId.toString());
-        cmd.add("--vmip", nic.getIp());
+        if (nic.getIp() != null) {
+            cmd.add("--vmip", nic.getIp().getHostAddress());
+        }
         cmd.add("--vmmac", nic.getMac());
         cmd.add("--vif", vif);
         cmd.add("--brname", brname);

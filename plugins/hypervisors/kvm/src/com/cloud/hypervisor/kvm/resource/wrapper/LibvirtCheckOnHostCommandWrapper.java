@@ -47,7 +47,11 @@ public final class LibvirtCheckOnHostCommandWrapper extends CommandWrapper<Check
         final List<NfsStoragePool> pools = monitor.getStoragePools();
         final HostTO host = command.getHost();
         final NetworkTO privateNetwork = host.getPrivateNetwork();
-        final KVMHAChecker ha = new KVMHAChecker(pools, privateNetwork.getIp());
+        String ipAddress = null;
+        if(privateNetwork.getIp() != null) {
+            ipAddress = privateNetwork.getIp().getHostAddress();
+        }
+        final KVMHAChecker ha = new KVMHAChecker(pools, ipAddress);
 
         final Future<Boolean> future = executors.submit(ha);
         try {

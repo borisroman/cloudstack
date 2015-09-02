@@ -29,13 +29,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.naming.ConfigurationException;
 
-import org.apache.log4j.Logger;
-import org.apache.xmlrpc.XmlRpcException;
-
-import com.trilead.ssh2.SCPClient;
-
 import org.apache.cloudstack.storage.to.TemplateObjectTO;
 import org.apache.cloudstack.storage.to.VolumeObjectTO;
+import org.apache.log4j.Logger;
+import org.apache.xmlrpc.XmlRpcException;
 
 import com.cloud.agent.IAgentControl;
 import com.cloud.agent.api.Answer;
@@ -132,6 +129,7 @@ import com.cloud.utils.ssh.SSHCmdHelper;
 import com.cloud.vm.DiskProfile;
 import com.cloud.vm.VirtualMachine;
 import com.cloud.vm.VirtualMachine.PowerState;
+import com.trilead.ssh2.SCPClient;
 
 public class OvmResourceBase implements ServerResource, HypervisorResource {
     private static final Logger s_logger = Logger.getLogger(OvmResourceBase.class);
@@ -968,7 +966,10 @@ public class OvmResourceBase implements ServerResource, HypervisorResource {
         }
 
         OvmVif.Details vif = getVifFromVm(vmName, nic.getDeviceId());
-        String ipAddress = nic.getIp();
+        String ipAddress = null;
+        if (nic.getIp() != null) {
+            ipAddress = nic.getIp().getHostAddress();
+        }
         String macAddress = vif.mac;
         String vifName = vif.name;
         String bridgeName = vif.bridge;

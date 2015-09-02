@@ -16,6 +16,9 @@
 // under the License.
 package com.cloud.hypervisor;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -85,18 +88,54 @@ public abstract class HypervisorGuruBase extends AdapterBase implements Hypervis
         to.setDeviceId(profile.getDeviceId());
         to.setBroadcastType(profile.getBroadcastType());
         to.setType(profile.getTrafficType());
-        to.setIp(profile.getIPv4Address());
-        to.setNetmask(profile.getIPv4Netmask());
         to.setMac(profile.getMacAddress());
-        to.setDns1(profile.getIPv4Dns1());
-        to.setDns2(profile.getIPv4Dns2());
-        to.setGateway(profile.getIPv4Gateway());
         to.setDefaultNic(profile.isDefaultNic());
         to.setBroadcastUri(profile.getBroadCastUri());
         to.setIsolationuri(profile.getIsolationUri());
         to.setNetworkRateMbps(profile.getNetworkRate());
         to.setName(profile.getName());
         to.setSecurityGroupEnabled(profile.isSecurityGroupEnabled());
+
+        /**
+         * TODO The following will be removed when the NicProfile class is being converted from String to InetAddress.
+         */
+        InetAddress ipAddress = null;
+        InetAddress netmask = null;
+        InetAddress dns1 = null;
+        InetAddress dns2 = null;
+        InetAddress gateway = null;
+
+        try {
+            ipAddress = InetAddress.getByName(profile.getIPv4Address());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+        try {
+            netmask = InetAddress.getByName(profile.getIPv4Netmask());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+        try {
+            dns1 = InetAddress.getByName(profile.getIPv4Dns1());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+        try {
+            dns2 = InetAddress.getByName(profile.getIPv4Dns2());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+        try {
+            gateway = InetAddress.getByName(profile.getIPv4Gateway());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+
+        to.setIp(ipAddress);
+        to.setNetmask(netmask);
+        to.setDns1(dns1);
+        to.setDns2(dns2);
+        to.setGateway(gateway);
 
         NetworkVO network = _networkDao.findById(profile.getNetworkId());
         to.setNetworkUuid(network.getUuid());
@@ -113,7 +152,21 @@ public abstract class HypervisorGuruBase extends AdapterBase implements Hypervis
             if (nicVO.getSecondaryIp()) {
                 secIps = _nicSecIpDao.getSecondaryIpAddressesForNic(nicVO.getId());
             }
-            to.setNicSecIps(secIps);
+
+            /**
+             * TODO The following will be removed when the DAO classes are being converted from String to InetAddress.
+             */
+            List<InetAddress> secInetIps = new ArrayList<>();
+            for(String ip : secIps) {
+                InetAddress inetAddress = null;
+                try {
+                    inetAddress = InetAddress.getByName(ip);
+                } catch (UnknownHostException e) {
+                    s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+                }
+                secInetIps.add(inetAddress);
+            }
+            to.setNicSecIps(secInetIps);
         } else {
             s_logger.warn("Unabled to load NicVO for NicProfile " + profile.getId());
             //Workaround for dynamically created nics

@@ -199,9 +199,13 @@ public class MockVmManagerImpl extends ManagerBase implements MockVmManager {
 
             for (final NicTO nic : nics) {
                 if (nic.getType() == TrafficType.Management) {
-                    prvIp = nic.getIp();
+                    if (nic.getIp() != null) {
+                        prvIp = nic.getIp().getHostAddress();
+                    }
                     prvMac = nic.getMac();
-                    prvNetMask = nic.getNetmask();
+                    if (nic.getNetmask() != null) {
+                        prvNetMask = nic.getNetmask().getHostAddress();
+                    }
                 }
             }
             long dcId = 0;

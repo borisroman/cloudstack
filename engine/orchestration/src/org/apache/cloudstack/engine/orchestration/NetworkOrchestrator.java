@@ -17,7 +17,9 @@
 package org.apache.cloudstack.engine.orchestration;
 
 
+import java.net.InetAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -889,18 +891,60 @@ public class NetworkOrchestrator extends ManagerBase implements NetworkOrchestra
 
     protected NicTO toNicTO(NicVO nic, NicProfile profile, NetworkVO config) {
         NicTO to = new NicTO();
+
+        /**
+         * TODO The following will be removed when the VO classes are being converted from String to InetAddress.
+         */
+        InetAddress ipAddress = null;
+        InetAddress netmask = null;
+        InetAddress dns1 = null;
+        InetAddress dns2 = null;
+        InetAddress gatewayNic = null;
+        InetAddress gatewayConfig = null;
+
+        try {
+            ipAddress = InetAddress.getByName(nic.getIPv4Address());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+        try {
+            netmask = InetAddress.getByName(nic.getIPv4Netmask());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+        try {
+            dns1 = InetAddress.getByName(profile.getIPv4Dns1());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+        try {
+            dns2 = InetAddress.getByName(profile.getIPv4Dns2());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+        try {
+            gatewayNic = InetAddress.getByName(nic.getIPv4Gateway());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+        try {
+            gatewayConfig = InetAddress.getByName(config.getGateway());
+        } catch (UnknownHostException e) {
+            s_logger.debug("Couldn't parse ip address String to InetAddress: " + e);
+        }
+
         to.setDeviceId(nic.getDeviceId());
         to.setBroadcastType(config.getBroadcastDomainType());
         to.setType(config.getTrafficType());
-        to.setIp(nic.getIPv4Address());
-        to.setNetmask(nic.getIPv4Netmask());
+        to.setIp(ipAddress);
+        to.setNetmask(netmask);
         to.setMac(nic.getMacAddress());
-        to.setDns1(profile.getIPv4Dns1());
-        to.setDns2(profile.getIPv4Dns2());
+        to.setDns1(dns1);
+        to.setDns2(dns2);
         if (nic.getIPv4Gateway() != null) {
-            to.setGateway(nic.getIPv4Gateway());
+            to.setGateway(gatewayNic);
         } else {
-            to.setGateway(config.getGateway());
+            to.setGateway(gatewayConfig);
         }
         if (nic.getVmType() != VirtualMachine.Type.User) {
             to.setPxeDisable(true);
@@ -908,10 +952,6 @@ public class NetworkOrchestrator extends ManagerBase implements NetworkOrchestra
         to.setDefaultNic(nic.isDefaultNic());
         to.setBroadcastUri(nic.getBroadcastUri());
         to.setIsolationuri(nic.getIsolationUri());
-        if (profile != null) {
-            to.setDns1(profile.getIPv4Dns1());
-            to.setDns2(profile.getIPv4Dns2());
-        }
 
         Integer networkRate = _networkModel.getNetworkRate(config.getId(), null);
         to.setNetworkRateMbps(networkRate);
