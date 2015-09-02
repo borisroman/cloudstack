@@ -57,9 +57,6 @@ public class DataCenterIpAddressVO implements InternalIdentity {
     @Column(name = "nic_id")
     private Long instanceId;
 
-    @Column(name = "mac_address")
-    long macAddress;
-
     protected DataCenterIpAddressVO() {
     }
 
@@ -108,9 +105,5 @@ public class DataCenterIpAddressVO implements InternalIdentity {
 
     public Date getTakenAt() {
         return takenAt;
-    }
-
-    public long getMacAddress() {
-        return macAddress;
     }
 }

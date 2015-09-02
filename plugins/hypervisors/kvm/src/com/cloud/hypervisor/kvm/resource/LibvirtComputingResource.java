@@ -1456,17 +1456,17 @@ public class LibvirtComputingResource extends ServerResourceBase implements Serv
     private void VifHotPlug(final Connect conn, final String vmName, final String broadcastUri, final String macAddr) throws InternalErrorException, LibvirtException {
         final NicTO nicTO = new NicTO();
         nicTO.setMac(macAddr);
-        nicTO.setType(TrafficType.Public);
+        nicTO.getNetwork().setType(TrafficType.Public);
         if (broadcastUri == null) {
-            nicTO.setBroadcastType(BroadcastDomainType.Native);
+            nicTO.getNetwork().setBroadcastType(BroadcastDomainType.Native);
         } else {
             final URI uri = BroadcastDomainType.fromString(broadcastUri);
-            nicTO.setBroadcastType(BroadcastDomainType.getSchemeValue(uri));
-            nicTO.setBroadcastUri(uri);
+            nicTO.getNetwork().setBroadcastType(BroadcastDomainType.getSchemeValue(uri));
+            nicTO.getNetwork().setBroadcastUri(uri);
         }
 
         final Domain vm = getDomain(conn, vmName);
-        vm.attachDevice(getVifDriver(nicTO.getType()).plug(nicTO, "Other PV", "").toString());
+        vm.attachDevice(getVifDriver(nicTO.getNetwork().getType()).plug(nicTO, "Other PV", "").toString());
     }
 
 
@@ -2152,7 +2152,7 @@ public class LibvirtComputingResource extends ServerResourceBase implements Serv
     }
 
     private void createVif(final LibvirtVMDef vm, final NicTO nic, final String nicAdapter) throws InternalErrorException, LibvirtException {
-        vm.getDevices().addDevice(getVifDriver(nic.getType()).plug(nic, vm.getPlatformEmulator().toString(), nicAdapter).toString());
+        vm.getDevices().addDevice(getVifDriver(nic.getNetwork().getType()).plug(nic, vm.getPlatformEmulator().toString(), nicAdapter).toString());
     }
 
     public boolean cleanupDisk(final DiskDef disk) {
@@ -3114,8 +3114,9 @@ public class LibvirtComputingResource extends ServerResourceBase implements Serv
         cmd.add("default_network_rules");
         cmd.add("--vmname", vmName);
         cmd.add("--vmid", vmId.toString());
-        if (nic.getIp() != null) {
-            cmd.add("--vmip", nic.getIp());
+        // @FIXME Tune this function to return the ip wanted.
+        if (nic.getIPv4Addresses().get(0).getIPv4Address() != null) {
+            cmd.add("--vmip", nic.getIPv4Addresses().get(0).getIPv4Address().getHostAddress());
         }
         cmd.add("--vmmac", nic.getMac());
         cmd.add("--vif", vif);
@@ -3146,7 +3147,7 @@ public class LibvirtComputingResource extends ServerResourceBase implements Serv
         cmd.add("post_default_network_rules");
         cmd.add("--vmname", vmName);
         cmd.add("--vmid", vmId.toString());
-        cmd.add("--vmip", nic.getIp());
+        cmd.add("--vmip", nic.getIPv4Addresses().get(0).getIPv4Address().getHostAddress());
         cmd.add("--vmmac", nic.getMac());
         cmd.add("--vif", vif);
         cmd.add("--brname", brname);

@@ -27,6 +27,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.net.InetAddress;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -174,7 +175,7 @@ public class CitrixRequestWrapperTest {
 
     @Test
     public void testExecuteRebootRouterCommand() {
-        final RebootRouterCommand rebootRouterCommand = new RebootRouterCommand("Test", "127.0.0.1");
+        final RebootRouterCommand rebootRouterCommand = new RebootRouterCommand("Test", InetAddress.getLoopbackAddress());
 
         final CitrixRequestWrapper wrapper = CitrixRequestWrapper.getInstance();
         assertNotNull(wrapper);
@@ -638,7 +639,7 @@ public class CitrixRequestWrapperTest {
 
     @Test
     public void testPingTestCommandHostIp() {
-        final PingTestCommand pingTestCommand = new PingTestCommand("127.0.0.1");
+        final PingTestCommand pingTestCommand = new PingTestCommand(InetAddress.getLoopbackAddress());
 
         final CitrixRequestWrapper wrapper = CitrixRequestWrapper.getInstance();
         assertNotNull(wrapper);
@@ -651,7 +652,7 @@ public class CitrixRequestWrapperTest {
 
     @Test
     public void testPingTestCommandRouterPvtIps() {
-        final PingTestCommand pingTestCommand = new PingTestCommand("127.0.0.1", "127.0.0.1");
+        final PingTestCommand pingTestCommand = new PingTestCommand(InetAddress.getLoopbackAddress(), InetAddress.getLoopbackAddress());
 
         final CitrixRequestWrapper wrapper = CitrixRequestWrapper.getInstance();
         assertNotNull(wrapper);
@@ -738,7 +739,7 @@ public class CitrixRequestWrapperTest {
 
     @Test
     public void testCheckSshCommand() {
-        final CheckSshCommand sshCommand = new CheckSshCommand("Test", "127.0.0.1", 22);
+        final CheckSshCommand sshCommand = new CheckSshCommand("Test", InetAddress.getLoopbackAddress(), 22);
 
         final CitrixRequestWrapper wrapper = CitrixRequestWrapper.getInstance();
         assertNotNull(wrapper);

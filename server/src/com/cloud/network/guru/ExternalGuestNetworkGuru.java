@@ -193,7 +193,7 @@ public class ExternalGuestNetworkGuru extends GuestNetworkGuru {
             if (nic.getIPv4Address() != null) {
                 long ipMask = getIpMask(nic.getIPv4Address(), cidrSize);
                 nic.setIPv4Address(NetUtils.long2Ip(newCidrAddress | ipMask));
-                _nicDao.persist(nic);
+                _nicDao.update(nic.getId(), nic);
             }
         }
 

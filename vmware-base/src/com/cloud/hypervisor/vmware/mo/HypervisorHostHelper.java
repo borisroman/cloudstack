@@ -17,6 +17,7 @@
 package com.cloud.hypervisor.vmware.mo;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidParameterException;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -195,7 +197,7 @@ public class HypervisorHostHelper {
     }
 
     public static void createPortProfile(VmwareContext context, String ethPortProfileName, String networkName, Integer vlanId, Integer networkRateMbps,
-            long peakBandwidth, long burstSize, String gateway, boolean configureVServiceInNexus) throws Exception {
+            long peakBandwidth, long burstSize, InetAddress gateway, boolean configureVServiceInNexus) throws Exception {
         Map<String, String> vsmCredentials = getValidatedVsmCredentials(context);
         String vsmIp = vsmCredentials.get("vsmip");
         String vsmUserName = vsmCredentials.get("vsmusername");
@@ -433,7 +435,7 @@ public class HypervisorHostHelper {
      */
 
     public static Pair<ManagedObjectReference, String> prepareNetwork(String physicalNetwork, String namePrefix, HostMO hostMo, String vlanId, String secondaryvlanId,
-            Integer networkRateMbps, Integer networkRateMulticastMbps, long timeOutMs, VirtualSwitchType vSwitchType, int numPorts, String gateway,
+            Integer networkRateMbps, Integer networkRateMulticastMbps, long timeOutMs, VirtualSwitchType vSwitchType, int numPorts, InetAddress gateway,
             boolean configureVServiceInNexus, BroadcastDomainType broadcastDomainType, Map<String, String> vsmCredentials) throws Exception {
         ManagedObjectReference morNetwork = null;
         VmwareContext context = hostMo.getContext();
@@ -988,7 +990,7 @@ public class HypervisorHostHelper {
     }
 
     public static Pair<ManagedObjectReference, String> prepareNetwork(String vSwitchName, String namePrefix, HostMO hostMo, String vlanId, Integer networkRateMbps,
-            Integer networkRateMulticastMbps, long timeOutMs, boolean syncPeerHosts, BroadcastDomainType broadcastDomainType, String nicUuid) throws Exception {
+            Integer networkRateMulticastMbps, long timeOutMs, boolean syncPeerHosts, BroadcastDomainType broadcastDomainType, UUID nicUuid) throws Exception {
 
         HostVirtualSwitch vSwitch;
         if (vSwitchName == null) {
@@ -1023,7 +1025,7 @@ public class HypervisorHostHelper {
              * Nicira NVP requires each vm to have its own port-group with a dedicated
              * vlan. We'll set the name of the pg to the uuid of the nic.
              */
-            networkName = nicUuid;
+            networkName = nicUuid.toString();
             // No doubt about this, depending on vid=null to avoid lots of code below
             vid = null;
         } else {

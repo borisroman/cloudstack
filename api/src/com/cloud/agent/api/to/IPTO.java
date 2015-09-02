@@ -14,40 +14,39 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-package com.cloud.vm;
+package com.cloud.agent.api.to;
 
-import org.apache.cloudstack.acl.ControlledEntity;
-import org.apache.cloudstack.api.Identity;
-import org.apache.cloudstack.api.InternalIdentity;
+import java.util.UUID;
 
-/** Each entry represents the alis ip of a perticular nic.
- *
- */
-public interface NicIpAlias extends ControlledEntity, Identity, InternalIdentity {
-    /**
-     * @return id in the CloudStack database
-     */
-    enum state {
-        active, revoked,
+abstract class IPTO {
+    private UUID uuid;
+    private String name;
+    private boolean isPrimaryAddress;
+
+    protected IPTO() {
     }
 
-    @Override
-    long getId();
+    public UUID getUuid() {
+        return uuid;
+    }
 
-    long getNicId();
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
 
-    String getIp4Address();
+    public String getName() {
+        return name;
+    }
 
-    String getIp6Address();
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    long getNetworkId();
+    public boolean isPrimaryAddress() {
+        return isPrimaryAddress;
+    }
 
-    long getVmId();
-
-    Long getAliasCount();
-
-    String getNetmask();
-
-    String getGateway();
-
+    public void setPrimaryAddress(boolean isPrimaryAddress) {
+        this.isPrimaryAddress = isPrimaryAddress;
+    }
 }

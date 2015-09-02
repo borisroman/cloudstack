@@ -24,7 +24,6 @@ import java.util.Random;
 import javax.ejb.Local;
 import javax.inject.Inject;
 import javax.naming.ConfigurationException;
-import javax.persistence.TableGenerator;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -38,23 +37,12 @@ import com.cloud.dc.PodVlanVO;
 import com.cloud.network.dao.AccountGuestVlanMapDao;
 import com.cloud.network.dao.AccountGuestVlanMapVO;
 import com.cloud.org.Grouping;
-import com.cloud.utils.NumbersUtil;
-import com.cloud.utils.Pair;
 import com.cloud.utils.db.DB;
 import com.cloud.utils.db.GenericDaoBase;
 import com.cloud.utils.db.SearchBuilder;
 import com.cloud.utils.db.SearchCriteria;
-import com.cloud.utils.db.SequenceFetcher;
 import com.cloud.utils.db.TransactionLegacy;
-import com.cloud.utils.net.NetUtils;
 
-/**
- * @config
- * {@table
- *    || Param Name | Description | Values | Default ||
- *    || mac.address.prefix | prefix to attach to all public and private mac addresses | number | 06 ||
- *  }
- **/
 @Component
 @Local(value = {DataCenterDao.class})
 public class DataCenterDaoImpl extends GenericDaoBase<DataCenterVO, Long> implements DataCenterDao {
@@ -80,9 +68,7 @@ public class DataCenterDaoImpl extends GenericDaoBase<DataCenterVO, Long> implem
     @Inject
     protected AccountGuestVlanMapDao _accountGuestVlanMapDao = null;
 
-    protected long _prefix;
     protected Random _rand = new Random(System.currentTimeMillis());
-    protected TableGenerator _tgMacAddress;
 
     @Override
     public DataCenterVO findByName(String name) {
@@ -230,32 +216,13 @@ public class DataCenterDaoImpl extends GenericDaoBase<DataCenterVO, Long> implem
     }
 
     @Override
-    public String[] getNextAvailableMacAddressPair(long id) {
-        return getNextAvailableMacAddressPair(id, 0);
-    }
-
-    @Override
-    public String[] getNextAvailableMacAddressPair(long id, long mask) {
-        SequenceFetcher fetch = SequenceFetcher.getInstance();
-
-        long seq = fetch.getNextSequence(Long.class, _tgMacAddress, id);
-        seq = seq | _prefix | ((id & 0x7f) << 32);
-        seq |= mask;
-        seq |= ((_rand.nextInt(Short.MAX_VALUE) << 16) & 0x00000000ffff0000l);
-        String[] pair = new String[2];
-        pair[0] = NetUtils.long2Mac(seq);
-        pair[1] = NetUtils.long2Mac(seq | 0x1l << 39);
-        return pair;
-    }
-
-    @Override
-    public Pair<String, Long> allocatePrivateIpAddress(long dcId, long podId, long instanceId, String reservationId) {
+    public String allocatePrivateIpAddress(long dcId, long podId, long instanceId, String reservationId) {
         _ipAllocDao.releaseIpAddress(instanceId);
         DataCenterIpAddressVO vo = _ipAllocDao.takeIpAddress(dcId, podId, instanceId, reservationId);
         if (vo == null) {
             return null;
         }
-        return new Pair<String, Long>(vo.getIpAddress(), vo.getMacAddress());
+        return vo.getIpAddress();
     }
 
     @Override
@@ -304,9 +271,6 @@ public class DataCenterDaoImpl extends GenericDaoBase<DataCenterVO, Long> implem
             return false;
         }
 
-        String value = (String)params.get("mac.address.prefix");
-        _prefix = (long)NumbersUtil.parseInt(value, 06) << 40;
-
         if (!_ipAllocDao.configure("Ip Alloc", params)) {
             return false;
         }
@@ -342,9 +306,6 @@ public class DataCenterDaoImpl extends GenericDaoBase<DataCenterVO, Long> implem
         TokenSearch = createSearchBuilder();
         TokenSearch.and("zoneToken", TokenSearch.entity().getZoneToken(), SearchCriteria.Op.EQ);
         TokenSearch.done();
-
-        _tgMacAddress = _tgs.get("macAddress");
-        assert _tgMacAddress != null : "Couldn't get mac address table generator";
     }
 
     @Override

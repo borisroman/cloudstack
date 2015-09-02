@@ -19,6 +19,7 @@
 
 package com.cloud.agent.api.routing;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 
 import com.cloud.agent.api.Command;
@@ -39,7 +40,7 @@ public abstract class NetworkElementCommand extends Command {
     public static final String FIREWALL_EGRESS_DEFAULT = "firewall.egress.default";
     public static final String ROUTER_MONITORING_ENABLE = "router.monitor.enable";
 
-    private String routerAccessIp;
+    private InetAddress routerAccessIp;
 
     protected NetworkElementCommand() {
         super();
@@ -58,11 +59,11 @@ public abstract class NetworkElementCommand extends Command {
         return false;
     }
 
-    public String getRouterAccessIp() {
+    public InetAddress getRouterAccessIp() {
         return routerAccessIp;
     }
 
-    public void setRouterAccessIp(final String routerAccessIp) {
+    public void setRouterAccessIp(final InetAddress routerAccessIp) {
         this.routerAccessIp = routerAccessIp;
     }
 

@@ -19,35 +19,37 @@
 
 package com.cloud.agent.api;
 
+import java.net.InetAddress;
+
 public class PingTestCommand extends Command {
 
-    String _computingHostIp = null;
-    String _routerIp = null;
-    String _privateIp = null;
+    InetAddress _computingHostIp = null;
+    InetAddress _routerIp = null;
+    InetAddress _privateIp = null;
 
     public PingTestCommand() {
     }
 
-    public PingTestCommand(String computingHostIp) {
+    public PingTestCommand(InetAddress computingHostIp) {
         _computingHostIp = computingHostIp;
         setWait(20);
     }
 
-    public PingTestCommand(String routerIp, String privateIp) {
+    public PingTestCommand(InetAddress routerIp, InetAddress privateIp) {
         _routerIp = routerIp;
         _privateIp = privateIp;
         setWait(20);
     }
 
-    public String getComputingHostIp() {
+    public InetAddress getComputingHostIp() {
         return _computingHostIp;
     }
 
-    public String getRouterIp() {
+    public InetAddress getRouterIp() {
         return _routerIp;
     }
 
-    public String getPrivateIp() {
+    public InetAddress getPrivateIp() {
         return _privateIp;
     }
 

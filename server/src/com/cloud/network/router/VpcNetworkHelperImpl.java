@@ -124,7 +124,6 @@ public class VpcNetworkHelperImpl extends NetworkHelperImpl {
                 publicNic.setIPv4Address(publicIp.getAddress().addr());
                 publicNic.setIPv4Gateway(publicIp.getGateway());
                 publicNic.setIPv4Netmask(publicIp.getNetmask());
-                publicNic.setMacAddress(publicIp.getMacAddress());
                 publicNic.setBroadcastType(BroadcastDomainType.Vlan);
                 publicNic.setBroadcastUri(BroadcastDomainType.Vlan.toUri(publicIp.getVlanTag()));
                 publicNic.setIsolationUri(IsolationType.Vlan.toUri(publicIp.getVlanTag()));

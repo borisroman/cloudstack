@@ -21,8 +21,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -58,6 +60,7 @@ import com.cloud.agent.api.to.FirewallRuleTO;
 import com.cloud.agent.api.to.IpAddressTO;
 import com.cloud.agent.api.to.LoadBalancerTO;
 import com.cloud.agent.api.to.NetworkACLTO;
+import com.cloud.agent.api.to.NicTO;
 import com.cloud.agent.api.to.PortForwardingRuleTO;
 import com.cloud.agent.api.to.StaticNatRuleTO;
 import com.cloud.agent.manager.Commands;
@@ -646,8 +649,7 @@ public class CommandSetupHelper {
         cmds.addCommand("deleteIpalias", deleteIpaliasCmd);
     }
 
-    public void createVpcAssociatePublicIPCommands(final VirtualRouter router, final List<? extends PublicIpAddress> ips, final Commands cmds,
-            final Map<String, String> vlanMacAddress) {
+    public void createVpcAssociatePublicIPCommands(final VirtualRouter router, final List<? extends PublicIpAddress> ips, final Commands cmds) {
 
         final String ipAssocCommand = "IPAssocVpcCommand";
         if (router.getIsRedundantRouter()) {
@@ -655,7 +657,7 @@ public class CommandSetupHelper {
             return;
         }
 
-        Pair<IpAddressTO, Long> sourceNatIpAdd = null;
+        Pair<NicTO, Long> sourceNatIpAdd = null;
         Boolean addSourceNat = null;
         // Ensure that in multiple vlans case we first send all ip addresses of
         // vlan1, then all ip addresses of vlan2, etc..
@@ -675,6 +677,15 @@ public class CommandSetupHelper {
             vlanIpMap.put(vlanTag, ipList);
         }
 
+
+        for (final Map.Entry<String, ArrayList<PublicIpAddress>> vlanAndIp : vlanIpMap.entrySet()) {
+            final List<PublicIpAddress> ipAddrList = vlanAndIp.getValue();
+
+
+        }
+
+
+
         for (final Map.Entry<String, ArrayList<PublicIpAddress>> vlanAndIp : vlanIpMap.entrySet()) {
             final List<PublicIpAddress> ipAddrList = vlanAndIp.getValue();
 
@@ -682,16 +693,15 @@ public class CommandSetupHelper {
             final Integer networkRate = _networkModel.getNetworkRate(ipAddrList.get(0).getNetworkId(), router.getId());
             final Network network = _networkModel.getNetwork(ipAddrList.get(0).getNetworkId());
 
-            final IpAddressTO[] ipsToSend = new IpAddressTO[ipAddrList.size()];
+            final Set<NicTO> ipsToSend = new HashSet<NicTO>();
             int i = 0;
 
             for (final PublicIpAddress ipAddr : ipAddrList) {
                 final boolean add = ipAddr.getState() == IpAddress.State.Releasing ? false : true;
 
-                final String macAddress = vlanMacAddress.get(BroadcastDomainType.getValue(BroadcastDomainType.fromString(ipAddr.getVlanTag())));
-
-                final IpAddressTO ip = new IpAddressTO(ipAddr.getAccountId(), ipAddr.getAddress().addr(), add, false, ipAddr.isSourceNat(), BroadcastDomainType.fromString(ipAddr.getVlanTag()).toString(), ipAddr.getGateway(),
-                        ipAddr.getNetmask(), macAddress, networkRate, ipAddr.isOneToOneNat());
+                NicTO nicTO = new NicTO();
+                nicTO.setAccountId(ipAddr.getAccountId()); ipAddr.getAddress().addr(), add, false, ipAddr.isSourceNat(), BroadcastDomainType.fromString(ipAddr.getVlanTag()).toString(), ipAddr.getGateway(),
+                        ipAddr.getNetmask(), networkRate, ipAddr.isOneToOneNat());
 
                 ip.setTrafficType(network.getTrafficType());
                 ip.setNetworkName(_networkModel.getNetworkTag(router.getHypervisorType(), network));
@@ -784,24 +794,25 @@ public class CommandSetupHelper {
                 final String vlanId = ipAddr.getVlanTag();
                 final String vlanGateway = ipAddr.getGateway();
                 final String vlanNetmask = ipAddr.getNetmask();
-                String vifMacAddress = null;
+
+                // @TODO FIX THIS MAC MESS!
+                //String vifMacAddress = null;
                 // For non-source nat IP, set the mac to be something based on
                 // first public nic's MAC
                 // We cannot depend on first ip because we need to deal with
                 // first ip of other nics
-                if (router.getVpcId() != null) {
-                    //vifMacAddress = NetUtils.generateMacOnIncrease(baseMac, ipAddr.getVlanId());
-                    vifMacAddress = ipAddr.getMacAddress();
-                } else {
-                    if (!sourceNat && ipAddr.getVlanId() != 0) {
-                        vifMacAddress = NetUtils.generateMacOnIncrease(baseMac, ipAddr.getVlanId());
-                    } else {
-                        vifMacAddress = ipAddr.getMacAddress();
-                    }
-                }
+//                if (router.getVpcId() != null) {
+//                    //vifMacAddress = NetUtils.generateMacOnIncrease(baseMac, ipAddr.getVlanId());
+//                    vifMacAddress = ipAddr.getMacAddress();
+//                } else {
+//                    if (!sourceNat && ipAddr.getVlanId() != 0) {
+//                        vifMacAddress = NetUtils.generateMacOnIncrease(baseMac, ipAddr.getVlanId());
+//                    } else {
+//                        vifMacAddress = ipAddr.getMacAddress();
+//                    }
+//                }
 
-                final IpAddressTO ip = new IpAddressTO(ipAddr.getAccountId(), ipAddr.getAddress().addr(), add, firstIP, sourceNat, vlanId, vlanGateway, vlanNetmask,
-                        vifMacAddress, networkRate, ipAddr.isOneToOneNat());
+                final IpAddressTO ip = new IpAddressTO(ipAddr.getAccountId(), ipAddr.getAddress().addr(), add, firstIP, sourceNat, vlanId, vlanGateway, vlanNetmask, networkRate, ipAddr.isOneToOneNat());
 
                 ip.setTrafficType(network.getTrafficType());
                 ip.setNetworkName(_networkModel.getNetworkTag(router.getHypervisorType(), network));
@@ -891,7 +902,7 @@ public class CommandSetupHelper {
             for (final PrivateIpAddress ipAddr : ipAddrList) {
                 final Network network = _networkModel.getNetwork(ipAddr.getNetworkId());
                 final IpAddressTO ip = new IpAddressTO(Account.ACCOUNT_ID_SYSTEM, ipAddr.getIpAddress(), add, false, ipAddr.getSourceNat(), ipAddr.getBroadcastUri(),
-                        ipAddr.getGateway(), ipAddr.getNetmask(), ipAddr.getMacAddress(), null, false);
+                        ipAddr.getGateway(), ipAddr.getNetmask(), null, false);
 
                 ip.setTrafficType(network.getTrafficType());
                 ip.setNetworkName(_networkModel.getNetworkTag(router.getHypervisorType(), network));

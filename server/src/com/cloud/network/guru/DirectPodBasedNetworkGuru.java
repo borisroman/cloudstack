@@ -203,7 +203,6 @@ public class DirectPodBasedNetworkGuru extends DirectNetworkGuru {
                         nic.setBroadcastType(BroadcastDomainType.Native);
                     }
                     nic.setReservationId(String.valueOf(ip.getVlanTag()));
-                    nic.setMacAddress(ip.getMacAddress());
 
                     //save the placeholder nic if the vm is the Virtual router
                     if (vm.getType() == VirtualMachine.Type.DomainRouter) {

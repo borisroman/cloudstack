@@ -18,67 +18,102 @@ package com.cloud.agent.api.to;
 
 import com.cloud.host.Host;
 
+/**
+ * Transferable Object Host
+ *
+ * Transfers information about a Host.
+ */
 public class HostTO {
-    private String guid;
-    private NetworkTO privateNetwork;
-    private NetworkTO publicNetwork;
-    private NetworkTO storageNetwork1;
-    private NetworkTO storageNetwork2;
+    private String uuid;
+    private NicTO privateNicTO;
+    private NicTO publicNicTO;
+    private NicTO storage1NicTO;
+    private NicTO storage2NicTO;
 
     protected HostTO() {
     }
 
-    public HostTO(Host vo) {
-        guid = vo.getGuid();
-        privateNetwork = new NetworkTO(vo.getPrivateIpAddress(), vo.getPrivateNetmask(), vo.getPrivateMacAddress());
-        if (vo.getPublicIpAddress() != null) {
-            publicNetwork = new NetworkTO(vo.getPublicIpAddress(), vo.getPublicNetmask(), vo.getPublicMacAddress());
+    public HostTO(Host host) {
+        uuid = host.getUuid();
+
+        if (host.getPrivateIPv4Address() != null) {
+            IPv4TO privateIPv4TO = new IPv4TO();
+            privateIPv4TO.setIPv4Address(host.getPrivateIPv4Address());
+            privateIPv4TO.setIPv4NetMask(host.getPrivateIPv4Netmask());
+
+            privateNicTO = new NicTO();
+            privateNicTO.setMac(host.getPrivateMacAddress());
+            privateNicTO.getIPv4Addresses().add(privateIPv4TO);
         }
-        if (vo.getStorageIpAddress() != null) {
-            storageNetwork1 = new NetworkTO(vo.getStorageIpAddress(), vo.getStorageNetmask(), vo.getStorageMacAddress());
+
+        if (host.getPublicIPv4Address() != null) {
+            IPv4TO publicIPv4TO = new IPv4TO();
+            publicIPv4TO.setIPv4Address(host.getPublicIPv4Address());
+            publicIPv4TO.setIPv4NetMask(host.getPublicIPv4Netmask());
+
+            publicNicTO = new NicTO();
+            publicNicTO.setMac(host.getPublicMacAddress());
+            publicNicTO.getIPv4Addresses().add(publicIPv4TO);
         }
-        if (vo.getStorageIpAddressDeux() != null) {
-            storageNetwork2 = new NetworkTO(vo.getStorageIpAddressDeux(), vo.getStorageNetmaskDeux(), vo.getStorageMacAddressDeux());
+
+        if (host.getStorageIPv4Address() != null) {
+            IPv4TO storageIPv4TO = new IPv4TO();
+            storageIPv4TO.setIPv4Address(host.getStorageIPv4Address());
+            storageIPv4TO.setIPv4NetMask(host.getStorageIPv4Netmask());
+
+            storage1NicTO = new NicTO();
+            storage1NicTO.setMac(host.getStorageMacAddress());
+            storage1NicTO.getIPv4Addresses().add(storageIPv4TO);
+        }
+
+        if (host.getStorageIPv4AddressDeux() != null) {
+            IPv4TO storageIPv4TO = new IPv4TO();
+            storageIPv4TO.setIPv4Address(host.getStorageIPv4AddressDeux());
+            storageIPv4TO.setIPv4NetMask(host.getStorageIPv4NetmaskDeux());
+
+            storage2NicTO = new NicTO();
+            storage2NicTO.setMac(host.getStorageMacAddressDeux());
+            storage2NicTO.getIPv4Addresses().add(storageIPv4TO);
         }
     }
 
-    public String getGuid() {
-        return guid;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setGuid(String guid) {
-        this.guid = guid;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
-    public NetworkTO getPrivateNetwork() {
-        return privateNetwork;
+    public NicTO getPrivateNicTO() {
+        return privateNicTO;
     }
 
-    public void setPrivateNetwork(NetworkTO privateNetwork) {
-        this.privateNetwork = privateNetwork;
+    public void setPrivateNicTO(NicTO privateNicTO) {
+        this.privateNicTO = privateNicTO;
     }
 
-    public NetworkTO getPublicNetwork() {
-        return publicNetwork;
+    public NicTO getPublicNicTO() {
+        return publicNicTO;
     }
 
-    public void setPublicNetwork(NetworkTO publicNetwork) {
-        this.publicNetwork = publicNetwork;
+    public void setPublicNicTO(NicTO publicNicTO) {
+        this.publicNicTO = publicNicTO;
     }
 
-    public NetworkTO getStorageNetwork1() {
-        return storageNetwork1;
+    public NicTO getStorage1NicTO() {
+        return storage1NicTO;
     }
 
-    public void setStorageNetwork1(NetworkTO storageNetwork1) {
-        this.storageNetwork1 = storageNetwork1;
+    public void setStorage1NicTO(NicTO storage1NicTO) {
+        this.storage1NicTO = storage1NicTO;
     }
 
-    public NetworkTO getStorageNetwork2() {
-        return storageNetwork2;
+    public NicTO getStorage2NicTO() {
+        return storage2NicTO;
     }
 
-    public void setStorageNetwork2(NetworkTO storageNetwork2) {
-        this.storageNetwork2 = storageNetwork2;
+    public void setStorage2NicTO(NicTO storage2NicTO) {
+        this.storage2NicTO = storage2NicTO;
     }
 }

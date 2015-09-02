@@ -16,21 +16,20 @@
 // under the License.
 package com.cloud.vm;
 
-import java.net.URI;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.cloudstack.api.Identity;
 import org.apache.cloudstack.api.InternalIdentity;
 
-import com.cloud.network.Networks.AddressFormat;
-import com.cloud.network.Networks.Mode;
 import com.cloud.utils.fsm.FiniteState;
 import com.cloud.utils.fsm.StateMachine;
+import com.cloud.utils.net.MacAddress;
 
 /**
- * Nic represents one nic on the VM.
+ * Nic represents a single nic on a VM.
  */
 public interface Nic extends Identity, InternalIdentity {
     enum Event {
@@ -38,8 +37,11 @@ public interface Nic extends Identity, InternalIdentity {
     }
 
     public enum State implements FiniteState<State, Event> {
-        Allocated("Resource is allocated but not reserved"), Reserving("Resource is being reserved right now"), Reserved("Resource has been reserved."), Releasing(
-                "Resource is being released"), Deallocating("Resource is being deallocated");
+        Allocated   ("Resource is allocated but not reserved"),
+        Reserving   ("Resource is being reserved right now"),
+        Reserved    ("Resource has been reserved."),
+        Releasing   ("Resource is being released"),
+        Deallocating("Resource is being deallocated");
 
         String _description;
 
@@ -89,17 +91,46 @@ public interface Nic extends Identity, InternalIdentity {
     }
 
     /**
-     * @return reservation id returned by the allocation source. This can be the String version of the database id if
-     *         the
-     *         allocation source does not need it's own implementation of the reservation id. This is passed back to the
-     *         allocation source to release the resource.
+     * @return the id of the vm this nic is attached to.
      */
-    String getReservationId();
+    long getInstanceId();
+
+    /**
+     * @return the id of the network this vm is in.
+     */
+    long getNetworkId();
+
+    /**
+     * @return reservation id returned by the allocation source. This can be the String version of the
+     *          database id if the allocation source does not need it's own implementation of the reservation id.
+     *          This is passed back to the allocation source to release the resource.
+     */
+    UUID getReservationUuid();
+
+    /**
+     * @return the device id of the nic.
+     */
+    int getDeviceId();
+
+    /**
+     * @return the mac address of the resource.
+     */
+    MacAddress getMacAddress();
+
+    /**
+     * @return the reservation state of the resource.
+     */
+    State getState();
+
+    /**
+     * @return the reservation strategy of the resource.
+     */
+    ReservationStrategy getReservationStrategy();
 
     /**
      * @return unique name for the allocation source.
      */
-    String getReserver();
+    String getReserverName();
 
     /**
      * @return the time a reservation request was made to the allocation source.
@@ -107,57 +138,17 @@ public interface Nic extends Identity, InternalIdentity {
     Date getUpdateTime();
 
     /**
-     * @return the reservation state of the resource.
+     * @return true if this is the default nic of the VM. False otherwise.
      */
-    State getState();
-
-    ReservationStrategy getReservationStrategy();
-
     boolean isDefaultNic();
 
-    String getMacAddress();
+    /**
+     * @return the time at which this nic was created.
+     */
+    Date getCreated();
 
     /**
-     * @return network profile id that this
+     * @return the time at which this nic was removed.
      */
-    long getNetworkId();
-
-    /**
-     * @return the vm instance id that this nic belongs to.
-     */
-    long getInstanceId();
-
-    int getDeviceId();
-
-    Mode getMode();
-
-    URI getIsolationUri();
-
-    URI getBroadcastUri();
-
-    VirtualMachine.Type getVmType();
-
-    AddressFormat getAddressFormat();
-
-    boolean getSecondaryIp();
-
-    //
-    // IPv4
-    //
-
-    String getIPv4Address();
-
-    String getIPv4Netmask();
-
-    String getIPv4Gateway();
-
-    //
-    // IPv6
-    //
-
-    String getIPv6Gateway();
-
-    String getIPv6Cidr();
-
-    String getIPv6Address();
+    Date getRemoved();
 }

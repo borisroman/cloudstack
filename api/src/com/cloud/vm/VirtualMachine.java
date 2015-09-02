@@ -257,11 +257,6 @@ public interface VirtualMachine extends RunningOn, ControlledEntity, Identity, I
     String getPrivateIpAddress();
 
     /**
-     * @return mac address.
-     */
-    String getPrivateMacAddress();
-
-    /**
      * @return password of the host for vnc purposes.
      */
     String getVncPassword();

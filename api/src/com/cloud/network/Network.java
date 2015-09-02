@@ -22,24 +22,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cloudstack.acl.ControlledEntity;
-import org.apache.cloudstack.api.Displayable;
 import org.apache.cloudstack.api.Identity;
 import org.apache.cloudstack.api.InternalIdentity;
 
 import com.cloud.network.Networks.BroadcastDomainType;
+import com.cloud.network.Networks.GuestType;
 import com.cloud.network.Networks.Mode;
 import com.cloud.network.Networks.TrafficType;
 import com.cloud.utils.fsm.StateMachine2;
 import com.cloud.utils.fsm.StateObject;
 
 /**
- * owned by an account.
+ * Defines a network
+ *
+ * In example the defaultGuestNetwork.
  */
-public interface Network extends ControlledEntity, StateObject<Network.State>, InternalIdentity, Identity, Serializable, Displayable {
-
-    public enum GuestType {
-        Shared, Isolated
-    }
+public interface Network extends ControlledEntity, StateObject<Network.State>, InternalIdentity, Identity, Serializable {
 
     public static class Service {
         private static List<Service> supportedServices = new ArrayList<Service>();
@@ -242,9 +240,12 @@ public interface Network extends ControlledEntity, StateObject<Network.State>, I
 
     public enum State {
 
-        Allocated("Indicates the network configuration is in allocated but not setup"), Setup("Indicates the network configuration is setup"), Implementing(
-                "Indicates the network configuration is being implemented"), Implemented("Indicates the network configuration is in use"), Shutdown(
-                "Indicates the network configuration is being destroyed"), Destroy("Indicates that the network is destroyed");
+        Allocated("Indicates the network configuration is in allocated but not setup"),
+        Setup("Indicates the network configuration is setup"),
+        Implementing("Indicates the network configuration is being implemented"),
+        Implemented("Indicates the network configuration is in use"),
+        Shutdown("Indicates the network configuration is being destroyed"),
+        Destroy("Indicates that the network is destroyed");
 
         protected static final StateMachine2<State, Network.Event, Network> s_fsm = new StateMachine2<State, Network.Event, Network>();
 
@@ -270,105 +271,48 @@ public interface Network extends ControlledEntity, StateObject<Network.State>, I
         }
     }
 
-    public class IpAddresses {
-        private String ip4Address;
-        private String ip6Address;
-
-        public IpAddresses(String ip4Address, String ip6Address) {
-            setIp4Address(ip4Address);
-            setIp6Address(ip6Address);
-        }
-
-        public String getIp4Address() {
-            return ip4Address;
-        }
-
-        public void setIp4Address(String ip4Address) {
-            this.ip4Address = ip4Address;
-        }
-
-        public String getIp6Address() {
-            return ip6Address;
-        }
-
-        public void setIp6Address(String ip6Address) {
-            this.ip6Address = ip6Address;
-        }
-    }
-
-    String getName();
-
-    Mode getMode();
-
-    BroadcastDomainType getBroadcastDomainType();
-
-    TrafficType getTrafficType();
-
-    String getGateway();
-
-    // "cidr" is the Cloudstack managed address space, all CloudStack managed vms get IP address from "cidr",
-    // In general "cidr" also serves as the network CIDR
-    // But in case IP reservation is configured for a Guest network, "networkcidr" is the Effective network CIDR for that network,
-    // "cidr" will still continue to be the effective address space for CloudStack managed vms in that Guest network
-    String getCidr();
-
-    // "networkcidr" is the network CIDR of the guest network which uses IP reservation.
-    // It is the summation of "cidr" and the reservedIPrange(the address space used for non CloudStack purposes).
-    // For networks not configured with IP reservation, "networkcidr" is always null
-    String getNetworkCidr();
-
-    String getIp6Gateway();
-
-    String getIp6Cidr();
-
-    long getDataCenterId();
-
-    long getNetworkOfferingId();
-
     @Override
     State getState();
 
-    boolean isRedundant();
+    Mode getMode();
+
+    ACLType getAclType();
+
+    BroadcastDomainType getBroadcastDomainType();
+
+    GuestType getGuestType();
+
+    TrafficType getTrafficType();
+
+    long getDataCenterId();
+
+    long getNetworkACLId();
+
+    long getNetworkOfferingId();
+
+    long getPhysicalNetworkId();
 
     long getRelated();
 
+    long getVpcId();
+
     URI getBroadcastUri();
+
+    URI getIsolationUri();
+
+    String getNetworkName();
 
     String getDisplayText();
 
     String getReservationId();
 
-    String getNetworkDomain();
+    String getGuruName();
 
-    GuestType getGuestType();
-
-    Long getPhysicalNetworkId();
-
-    void setPhysicalNetworkId(Long physicalNetworkId);
-
-    public void setTrafficType(TrafficType type);
-
-    ACLType getAclType();
+    boolean isRedundant();
 
     boolean isRestartRequired();
 
-    boolean getSpecifyIpRanges();
-
-    @Deprecated
-    boolean getDisplayNetwork();
-
-    boolean isDisplay();
-
-    String getGuruName();
-
-    /**
-     * @return
-     */
-    Long getVpcId();
-
-    Long getNetworkACLId();
-
-    void setNetworkACLId(Long networkACLId);
+    boolean isSpecifyIpRanges();
 
     boolean isStrechedL2Network();
 }

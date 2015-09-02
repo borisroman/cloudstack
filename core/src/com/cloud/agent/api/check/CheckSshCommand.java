@@ -19,10 +19,12 @@
 
 package com.cloud.agent.api.check;
 
+import java.net.InetAddress;
+
 import com.cloud.agent.api.Command;
 
 public class CheckSshCommand extends Command {
-    String ip;
+    InetAddress ip;
     int port;
     int interval;
     int retries;
@@ -32,7 +34,7 @@ public class CheckSshCommand extends Command {
         super();
     }
 
-    public CheckSshCommand(String instanceName, String ip, int port) {
+    public CheckSshCommand(String instanceName, InetAddress ip, int port) {
         super();
         this.ip = ip;
         this.port = port;
@@ -45,7 +47,7 @@ public class CheckSshCommand extends Command {
         return name;
     }
 
-    public String getIp() {
+    public InetAddress getIp() {
         return ip;
     }
 

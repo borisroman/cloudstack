@@ -24,13 +24,11 @@ import javax.ejb.Local;
 import javax.inject.Inject;
 import javax.naming.ConfigurationException;
 
-import org.apache.log4j.Logger;
-
 import org.apache.cloudstack.framework.config.dao.ConfigurationDao;
+import org.apache.log4j.Logger;
 
 import com.cloud.configuration.Config;
 import com.cloud.dc.DataCenter;
-import com.cloud.dc.DataCenterVO;
 import com.cloud.dc.Vlan;
 import com.cloud.dc.VlanVO;
 import com.cloud.dc.dao.DataCenterDao;
@@ -128,13 +126,6 @@ public class Ipv6AddressManagerImpl extends ManagerBase implements Ipv6AddressMa
                 throw new CloudRuntimeException("The requested IP is already taken!");
             }
         }
-        DataCenterVO dc = _dcDao.findById(dcId);
-        Long mac = dc.getMacAddress();
-        Long nextMac = mac + 1;
-        dc.setMacAddress(nextMac);
-        _dcDao.update(dc.getId(), dc);
-
-        String macAddress = NetUtils.long2Mac(NetUtils.createSequenceBasedMacAddress(mac));
         UserIpv6AddressVO ipVO = new UserIpv6AddressVO(ip, dcId, macAddress, ipVlan.getId());
         ipVO.setPhysicalNetworkId(network.getPhysicalNetworkId());
         ipVO.setSourceNetworkId(networkId);

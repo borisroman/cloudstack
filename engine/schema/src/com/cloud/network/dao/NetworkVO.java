@@ -27,7 +27,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
-import javax.persistence.Transient;
 
 import org.apache.cloudstack.acl.ControlledEntity;
 
@@ -117,10 +116,6 @@ public class NetworkVO implements Network {
 
     @Column(name = "set_fields")
     long setFields;
-
-    @TableGenerator(name = "mac_address_seq", table = "op_networks", pkColumnName = "id", valueColumnName = "mac_address_seq", allocationSize = 1)
-    @Transient
-    long macAddress = 1;
 
     @Column(name = "guru_data", length = 1024)
     String guruData;

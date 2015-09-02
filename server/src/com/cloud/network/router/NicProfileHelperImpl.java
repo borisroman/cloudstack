@@ -77,8 +77,7 @@ public class NicProfileHelperImpl implements NicProfileHelper {
         } else {
             final String netmask = NetUtils.getCidrNetmask(privateNetwork.getCidr());
             final PrivateIpAddress ip =
-                    new PrivateIpAddress(ipVO, privateNetwork.getBroadcastUri().toString(), privateNetwork.getGateway(), netmask,
-                            NetUtils.long2Mac(NetUtils.createSequenceBasedMacAddress(ipVO.getMacAddress())));
+                    new PrivateIpAddress(ipVO, privateNetwork.getBroadcastUri().toString(), privateNetwork.getGateway(), netmask);
 
             final URI netUri = BroadcastDomainType.fromString(ip.getBroadcastUri());
             privateNicProfile.setIPv4Address(ip.getIpAddress());
@@ -91,7 +90,6 @@ public class NicProfileHelperImpl implements NicProfileHelper {
             privateNicProfile.setBroadcastType(BroadcastDomainType.getSchemeValue(netUri));
             privateNicProfile.setFormat(AddressFormat.Ip4);
             privateNicProfile.setReservationId(String.valueOf(ip.getBroadcastUri()));
-            privateNicProfile.setMacAddress(ip.getMacAddress());
         }
 
         return privateNicProfile;

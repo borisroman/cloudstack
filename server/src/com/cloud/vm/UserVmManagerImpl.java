@@ -1371,8 +1371,8 @@ public class UserVmManagerImpl extends ManagerBase implements UserVmManager, Vir
         existingVO.setDefaultNic(false);
         existingVO.setDeviceId(chosenID);
 
-        nic = _nicDao.persist(nic);
-        existingVO = _nicDao.persist(existingVO);
+        _nicDao.update(nic.getId(), nic);
+        _nicDao.update(existingVO.getId(), existingVO);
 
         Network newdefault = null;
         newdefault = _networkModel.getDefaultNetworkForVm(vmId);
@@ -1383,8 +1383,8 @@ public class UserVmManagerImpl extends ManagerBase implements UserVmManager, Vir
             existingVO.setDefaultNic(true);
             existingVO.setDeviceId(existingID);
 
-            nic = _nicDao.persist(nic);
-            _nicDao.persist(existingVO);
+            _nicDao.update(nic.getId(), nic);
+            _nicDao.update(existingVO.getId(), existingVO);
 
             newdefault = _networkModel.getDefaultNetworkForVm(vmId);
             if (newdefault.getId() == existingdefaultnet.getId()) {
@@ -3573,7 +3573,6 @@ public class UserVmManagerImpl extends ManagerBase implements UserVmManager, Vir
             NetworkVO network = _networkDao.findById(nic.getNetworkId());
             if (network.getTrafficType() == TrafficType.Guest || network.getTrafficType() == TrafficType.Public) {
                 userVm.setPrivateIpAddress(nic.getIPv4Address());
-                userVm.setPrivateMacAddress(nic.getMacAddress());
                 _vmDao.update(userVm.getId(), userVm);
             }
         }

@@ -25,8 +25,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,6 +38,8 @@ import com.cloud.utils.db.SearchBuilder;
 import com.cloud.utils.db.SearchCriteria;
 import com.cloud.utils.net.Ip;
 
+import junit.framework.Assert;
+
 public class NetworkModelTest {
     @Before
     public void setUp() {
@@ -52,7 +52,7 @@ public class NetworkModelTest {
         IPAddressDao ipAddressDao = mock(IPAddressDao.class);
         modelImpl._ipAddressDao = ipAddressDao;
         List<IPAddressVO> fakeList = new ArrayList<IPAddressVO>();
-        IPAddressVO fakeIp = new IPAddressVO(new Ip("75.75.75.75"), 1, 0xaabbccddeeffL, 10, false);
+        IPAddressVO fakeIp = new IPAddressVO(new Ip("75.75.75.75"), 1, 10, false);
         fakeList.add(fakeIp);
         SearchBuilder<IPAddressVO> fakeSearch = mock(SearchBuilder.class);
         modelImpl.IpAddressSearch = fakeSearch;
@@ -68,7 +68,7 @@ public class NetworkModelTest {
         when(fakeNetwork.getId()).thenReturn(1L);
         PublicIpAddress answer = modelImpl.getSourceNatIpAddressForGuestNetwork(fakeAccount, fakeNetwork);
         Assert.assertNull(answer);
-        IPAddressVO fakeIp2 = new IPAddressVO(new Ip("76.75.75.75"), 1, 0xaabb10ddeeffL, 10, true);
+        IPAddressVO fakeIp2 = new IPAddressVO(new Ip("76.75.75.75"), 1, 10, true);
         fakeList.add(fakeIp2);
         when(ipAddressDao.findById(anyLong())).thenReturn(fakeIp2);
         answer = modelImpl.getSourceNatIpAddressForGuestNetwork(fakeAccount, fakeNetwork);

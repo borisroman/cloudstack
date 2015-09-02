@@ -1007,7 +1007,7 @@ public class SecurityGroupManagerImpl extends ManagerBase implements SecurityGro
                                     nicSecIps = _nicSecIpDao.getSecondaryIpAddressesForNic(nic.getId());
                                 }
                             }
-                            SecurityGroupRulesCmd cmd = generateRulesetCmd(vm.getInstanceName(), vm.getPrivateIpAddress(), vm.getPrivateMacAddress(), vm.getId(),
+                            SecurityGroupRulesCmd cmd = generateRulesetCmd(vm.getInstanceName(), vm.getPrivateIpAddress(), "ab:2d:0a:1f:ab:d7", vm.getId(),
                                     generateRulesetSignature(ingressRules, egressRules), seqnum, ingressRules, egressRules, nicSecIps);
                             Commands cmds = new Commands(cmd);
                             try {
@@ -1373,7 +1373,7 @@ public class SecurityGroupManagerImpl extends ManagerBase implements SecurityGro
             return true;
         }
 
-        String vmMac = vm.getPrivateMacAddress();
+        String vmMac = "b5:f3:81:07:36:d9";
         String vmName = vm.getInstanceName();
         if (vmMac == null || vmName == null) {
             throw new InvalidParameterValueException("vm name or vm mac can't be null");

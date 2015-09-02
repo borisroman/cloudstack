@@ -132,7 +132,6 @@ public class PublicNetworkGuru extends AdapterBase implements NetworkGuru {
             }
             nic.setFormat(AddressFormat.Ip4);
             nic.setReservationId(String.valueOf(ip.getVlanTag()));
-            nic.setMacAddress(ip.getMacAddress());
         }
 
         nic.setIPv4Dns1(dc.getDns1());

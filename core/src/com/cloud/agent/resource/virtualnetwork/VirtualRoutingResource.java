@@ -20,6 +20,7 @@
 package com.cloud.agent.resource.virtualnetwork;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -281,15 +282,15 @@ public class VirtualRoutingResource {
         return true;
     }
 
-    public boolean connect(final String ipAddress) {
+    public boolean connect(final InetAddress ipAddress) {
         return connect(ipAddress, _port);
     }
 
-    public boolean connect(final String ipAddress, final int port) {
+    public boolean connect(final InetAddress ipAddress, final int port) {
         return connect(ipAddress, port, _sleep);
     }
 
-    public boolean connect(final String ipAddress, int retry, int sleep) {
+    public boolean connect(final InetAddress ipAddress, int retry, int sleep) {
         for (int i = 0; i <= retry; i++) {
             SocketChannel sch = null;
             try {

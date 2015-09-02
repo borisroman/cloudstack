@@ -19,17 +19,19 @@
 
 package com.cloud.agent.api.routing;
 
-import com.cloud.agent.api.to.IpAddressTO;
+import java.util.Set;
+
+import com.cloud.agent.api.to.NicTO;
 
 public class IpAssocCommand extends NetworkElementCommand {
 
-    IpAddressTO[] ipAddresses;
+    Set<NicTO> nicTOs;
 
     protected IpAssocCommand() {
     }
 
-    public IpAssocCommand(IpAddressTO[] ips) {
-        this.ipAddresses = ips;
+    public IpAssocCommand(Set<NicTO> nicTOs) {
+        this.nicTOs = nicTOs;
     }
 
     @Override
@@ -37,12 +39,16 @@ public class IpAssocCommand extends NetworkElementCommand {
         return false;
     }
 
-    public IpAddressTO[] getIpAddresses() {
-        return ipAddresses;
+    public Set<NicTO> getNicTOs() {
+        return nicTOs;
     }
 
     @Override
     public int getAnswersCount() {
-        return ipAddresses.length;
+        int count = 0;
+        for (NicTO nicTO : nicTOs) {
+            count += (nicTO.getIPv4TOs().size() + nicTO.getIPv6TOs().size());
+        }
+        return count;
     }
 }

@@ -16,6 +16,7 @@
 // under the License.
 package com.cloud.host;
 
+import java.net.Inet4Address;
 import java.util.Date;
 
 import org.apache.cloudstack.api.Identity;
@@ -23,17 +24,32 @@ import org.apache.cloudstack.api.InternalIdentity;
 
 import com.cloud.hypervisor.Hypervisor.HypervisorType;
 import com.cloud.resource.ResourceState;
+import com.cloud.storage.Storage.StoragePoolType;
 import com.cloud.utils.fsm.StateObject;
+import com.cloud.utils.net.MacAddress;
 
 /**
  *  Host represents one particular host server.
  */
 public interface Host extends StateObject<Status>, Identity, InternalIdentity {
     public enum Type {
-        Storage(false), Routing(false), SecondaryStorage(false), SecondaryStorageCmdExecutor(false), ConsoleProxy(true), ExternalFirewall(false), ExternalLoadBalancer(
-                false), ExternalVirtualSwitchSupervisor(false), PxeServer(false), BaremetalPxe(false), BaremetalDhcp(false), TrafficMonitor(false),
+        BaremetalDhcp(false),
+        BaremetalPxe(false),
+        ConsoleProxy(true),
+        ExternalDhcp(false),
+        ExternalFirewall(false),
+        ExternalLoadBalancer(false),
+        ExternalVirtualSwitchSupervisor(false),
+        L2Networking(false),
+        LocalSecondaryStorage(false),
+        PxeServer(false),
+        Routing(false),
+        SecondaryStorage(false),
+        SecondaryStorageCmdExecutor(false),
+        SecondaryStorageVM(true),
+        Storage(false),
+        TrafficMonitor(false);
 
-        ExternalDhcp(false), SecondaryStorageVM(true), LocalSecondaryStorage(false), L2Networking(false);
         boolean _virtual;
 
         private Type(boolean virtual) {
@@ -58,15 +74,67 @@ public interface Host extends StateObject<Status>, Identity, InternalIdentity {
      */
     String getName();
 
-    /**
-     * @return the type of host.
-     */
-    Type getType();
+    /////////
+    // IDs //
+    /////////
 
     /**
-     * @return the date the host first registered
+     * @return the pod id.
      */
-    Date getCreated();
+    long getPodId();
+
+    /**
+     * @return the cluster id.
+     */
+    long getClusterId();
+
+    /**
+     * @return availability zone id.
+     */
+    long getDataCenterId();
+
+    /**
+     * @return management server id
+     */
+    long getManagementServerId();
+
+    ////////////////
+    // Host specs //
+    ////////////////
+
+    /**
+     * @return total amount of memory.
+     */
+    long getTotalMemory();
+
+    /**
+     * @return # of cpu sockets in a machine.
+     */
+    int getCpuSockets();
+
+    /**
+     * @return # of cores in a machine.  Note two cpus with two cores each returns 4.
+     */
+    int getCpus();
+
+    /**
+     * @return speed of each cpu in mhz.
+     */
+    long getSpeed();
+
+    /**
+     * @return total size
+     */
+    long getTotalSize();
+
+    /**
+     * @return type of hypervisor
+     */
+    HypervisorType getHypervisorType();
+
+    ////////////
+    // STATUS //
+    ////////////
 
     /**
      * @return current state of this machine.
@@ -74,74 +142,14 @@ public interface Host extends StateObject<Status>, Identity, InternalIdentity {
     Status getStatus();
 
     /**
-     * @return the ip address of the host.
+     * @return true if the host is in maintance mode.
      */
-    String getPrivateIpAddress();
+    boolean isInMaintenanceStates();
 
     /**
-     * @return the ip address of the host.
+     * @return the resource state.
      */
-    String getStorageUrl();
-
-    /**
-     * @return the ip address of the host attached to the storage network.
-     */
-    String getStorageIpAddress();
-
-    /**
-     * @return the mac address of the host.
-     */
-    String getGuid();
-
-    /**
-     * @return total amount of memory.
-     */
-    Long getTotalMemory();
-
-    /**
-     * @return # of cpu sockets in a machine.
-     */
-    Integer getCpuSockets();
-
-    /**
-     * @return # of cores in a machine.  Note two cpus with two cores each returns 4.
-     */
-    Integer getCpus();
-
-    /**
-     * @return speed of each cpu in mhz.
-     */
-    Long getSpeed();
-
-    /**
-     * @return the proxy port that is being listened at the agent host
-     */
-    Integer getProxyPort();
-
-    /**
-     * @return the pod.
-     */
-    Long getPodId();
-
-    /**
-     * @return availability zone.
-     */
-    long getDataCenterId();
-
-    /**
-     * @return parent path.  only used for storage server.
-     */
-    String getParent();
-
-    /**
-     * @return storage ip address.
-     */
-    String getStorageIpAddressDeux();
-
-    /**
-     * @return type of hypervisor
-     */
-    HypervisorType getHypervisorType();
+    ResourceState getResourceState();
 
     /**
      * @return disconnection date
@@ -149,58 +157,97 @@ public interface Host extends StateObject<Status>, Identity, InternalIdentity {
     Date getDisconnectedOn();
 
     /**
-     * @return version
-     */
-    String getVersion();
-
-    /*
-     * @return total size
-     */
-    long getTotalSize();
-
-    /*
-     * @return capabilities
-     */
-    String getCapabilities();
-
-    /*
      * @return last pinged time
      */
     long getLastPinged();
 
-    /*
-     * @return management server id
-     */
-    Long getManagementServerId();
+    //////////////
+    // VERSIONS //
+    //////////////
 
-    /*
-     *@return removal date
+    /**
+     * @return the hypervisor version
+     */
+    String getHypervisorVersion();
+
+    //////////////////
+    // HOST VARIOUS //
+    //////////////////
+
+    /**
+     * @return the type of host.
+     */
+    Type getType();
+
+    /**
+     * @return the storage pool type of this host.
+     */
+    StoragePoolType getStoragePoolType();
+
+    /**
+     * @return the storage url being used on the host.
+     */
+    String getStorageUrl();
+
+    /**
+     * @return the proxy port that is being listened at the agent host
+     */
+    int getProxyPort();
+
+    /**
+     * @return parent path. Only used for storage server.
+     */
+    String getParent();
+
+    ///////////////////////
+    // CREATED / REMOVED //
+    ///////////////////////
+
+    /**
+     * @return the date the host first registered
+     */
+    Date getCreated();
+
+    /**
+     * @return removal date
      */
     Date getRemoved();
 
-    Long getClusterId();
+    /**
+     * @return capabilities
+     */
+    String getCapabilities();
 
-    String getPublicIpAddress();
 
-    String getPublicNetmask();
+    //////////////////
+    // IP Addresses //
+    //////////////////
 
-    String getPrivateNetmask();
+    // Public IPv4
+    Inet4Address getPublicIPv4Address();
 
-    String getStorageNetmask();
+    Inet4Address getPublicIPv4Netmask();
 
-    String getStorageMacAddress();
+    MacAddress getPublicMacAddress();
 
-    String getPublicMacAddress();
+    // Private IPv4
+    Inet4Address getPrivateIPv4Address();
 
-    String getPrivateMacAddress();
+    Inet4Address getPrivateIPv4Netmask();
 
-    String getStorageNetmaskDeux();
+    MacAddress getPrivateMacAddress();
 
-    String getStorageMacAddressDeux();
+    // Storage IPv4
+    Inet4Address getStorageIPv4Address();
 
-    String getHypervisorVersion();
+    Inet4Address getStorageIPv4Netmask();
 
-    boolean isInMaintenanceStates();
+    MacAddress getStorageMacAddress();
 
-    ResourceState getResourceState();
+    // Storage 2 IPv4
+    Inet4Address getStorageIPv4AddressDeux();
+
+    Inet4Address getStorageIPv4NetmaskDeux();
+
+    MacAddress getStorageMacAddressDeux();
 }

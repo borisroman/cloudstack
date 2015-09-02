@@ -1152,7 +1152,6 @@ public class SecondaryStorageManagerImpl extends ManagerBase implements Secondar
                 secVm.setPublicMacAddress(nic.getMacAddress());
             } else if (nic.getTrafficType() == TrafficType.Management) {
                 secVm.setPrivateIpAddress(nic.getIPv4Address());
-                secVm.setPrivateMacAddress(nic.getMacAddress());
             }
         }
         _secStorageVmDao.update(secVm.getId(), secVm);

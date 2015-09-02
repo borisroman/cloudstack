@@ -24,7 +24,8 @@ import java.util.List;
 
 import com.cloud.agent.api.routing.IpAssocCommand;
 import com.cloud.agent.api.routing.NetworkElementCommand;
-import com.cloud.agent.api.to.IpAddressTO;
+import com.cloud.agent.api.to.IPv4TO;
+import com.cloud.agent.api.to.NicTO;
 import com.cloud.agent.resource.virtualnetwork.ConfigItem;
 import com.cloud.agent.resource.virtualnetwork.VRScripts;
 import com.cloud.agent.resource.virtualnetwork.model.ConfigBase;
@@ -39,10 +40,12 @@ public class IpAssociationConfigItem extends AbstractConfigItemFacade {
 
         final List<IpAddress> ips = new LinkedList<IpAddress>();
 
-        for (final IpAddressTO ip : command.getIpAddresses()) {
-            final IpAddress ipAddress = new IpAddress(ip.getPublicIp(), ip.isSourceNat(), ip.isAdd(), ip.isOneToOneNat(), ip.isFirstIP(), ip.getVlanGateway(), ip.getVlanNetmask(),
-                    ip.getVifMacAddress(), ip.getNicDevId(), ip.isNewNic());
-            ips.add(ipAddress);
+        for (final NicTO nicTO : command.getNicTOs()) {
+            for (final IPv4TO iPv4TO : nicTO.getIPv4TOs()) {
+                final IpAddress ipAddress = new IpAddress(iPv4TO.getIPv4Address().getHostAddress(), nicTO.getNetworkTO().isSourceNat(), nicTO.isAdd(), nicTO.getNetworkTO().isOneToOneNat(), false, iPv4TO.getIPv4GateWay().getHostAddress(), iPv4TO.getIPv4NetMask().getHostAddress(), nicTO.getDeviceId(), nicTO.isNewNic());
+                ips.add(ipAddress);
+            }
+            // TODO Add IPv6.
         }
 
         final IpAssociation ipAssociation = new IpAssociation(ips.toArray(new IpAddress[ips.size()]));

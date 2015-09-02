@@ -24,13 +24,12 @@ import java.util.List;
 import javax.ejb.Local;
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Component;
-
 import org.apache.cloudstack.api.command.admin.network.CreateStorageNetworkIpRangeCmd;
 import org.apache.cloudstack.api.command.admin.network.DeleteStorageNetworkIpRangeCmd;
 import org.apache.cloudstack.api.command.admin.network.ListStorageNetworkIpRangeCmd;
 import org.apache.cloudstack.api.command.admin.network.UpdateStorageNetworkIpRangeCmd;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import com.cloud.dc.HostPodVO;
 import com.cloud.dc.StorageNetworkIpAddressVO;
@@ -98,25 +97,17 @@ public class StorageNetworkManagerImpl extends ManagerBase implements StorageNet
         }
     }
 
-    private void createStorageIpEntires(TransactionLegacy txn, long rangeId, String startIp, String endIp, long zoneId) throws SQLException {
+    private void createStorageIpEntires(TransactionLegacy txn, long rangeId, String startIp, String endIp) throws SQLException {
         long startIPLong = NetUtils.ip2Long(startIp);
         long endIPLong = NetUtils.ip2Long(endIp);
-        String insertSql =
-            "INSERT INTO `cloud`.`op_dc_storage_network_ip_address` (range_id, ip_address, mac_address, taken) VALUES (?, ?, (select mac_address from `cloud`.`data_center` where id=?), ?)";
-        String updateSql = "UPDATE `cloud`.`data_center` set mac_address = mac_address+1 where id=?";
+        String insertSql = "INSERT INTO `cloud`.`op_dc_storage_network_ip_address` (range_id, ip_address, taken) VALUES (?, ?, ?)";
         try (Connection conn = txn.getConnection();) {
             while (startIPLong <= endIPLong) {
                 try (PreparedStatement stmt_insert = conn.prepareStatement(insertSql); ) {
                     stmt_insert.setLong(1, rangeId);
                     stmt_insert.setString(2, NetUtils.long2Ip(startIPLong++));
-                    stmt_insert.setLong(3, zoneId);
-                    stmt_insert.setNull(4, java.sql.Types.DATE);
+                    stmt_insert.setNull(3, java.sql.Types.DATE);
                     stmt_insert.executeUpdate();
-                }
-
-                try (PreparedStatement stmt_update = txn.prepareStatement(updateSql);) {
-                    stmt_update.setLong(1, zoneId);
-                    stmt_update.executeUpdate();
                 }
             }
         }
@@ -232,14 +223,13 @@ public class StorageNetworkManagerImpl extends ManagerBase implements StorageNet
                 StorageNetworkIpRangeVO range = new StorageNetworkIpRangeVO(zoneId, podId, nw.getId(), startIp, endIpFinal, vlan, netmask, cmd.getGateWay());
                 _sNwIpRangeDao.persist(range);
                 try {
-                    createStorageIpEntires(TransactionLegacy.currentTxn(), range.getId(), startIp, endIpFinal, zoneId);
+                    createStorageIpEntires(TransactionLegacy.currentTxn(), range.getId(), startIp, endIpFinal);
                 } catch (SQLException e) {
                     StringBuilder err = new StringBuilder();
                     err.append("Create storage network range failed.");
                     err.append("startIp=" + startIp);
                     err.append("endIp=" + endIpFinal);
                     err.append("netmask=" + netmask);
-                    err.append("zoneId=" + zoneId);
                     s_logger.debug(err.toString(), e);
                     throw e;
                 }

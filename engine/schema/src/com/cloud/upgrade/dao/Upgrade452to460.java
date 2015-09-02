@@ -62,6 +62,7 @@ public class Upgrade452to460 implements DbUpgrade {
     public void performDataMigration(final Connection conn) {
         updateVMInstanceUserId(conn);
         addIndexForVMInstance(conn);
+        addUniqueConstraintMacAddress(conn);
     }
 
     public void updateVMInstanceUserId(final Connection conn) {
@@ -152,6 +153,18 @@ public class Upgrade452to460 implements DbUpgrade {
             s_logger.debug("Added index i_vm_instance__instance_name to vm_instance table");
         } catch (SQLException e) {
             throw new CloudRuntimeException("Unable to add index i_vm_instance__instance_name to vm_instance table for the column instance_name", e);
+        }
+    }
+
+    private void addUniqueConstraintMacAddress(Connection conn) {
+        s_logger.debug("Adding UNIQUE constraint to COLUMN mac_address in TABLE nics.");
+
+        // Try SQL transaction
+        try (PreparedStatement pstmt = conn.prepareStatement("ALTER TABLE `cloud`.`nics` ADD UNIQUE(`mac_address`);");) {
+            pstmt.executeUpdate();
+            s_logger.debug("Added UNIQUE constraint to COLUMN mac_address in TABLE nics.");
+        } catch (SQLException e) {
+            throw new CloudRuntimeException("Unable to add UNIQUE constraint to COLUMN mac_address in TABLE nics. Possible duplicate mac_address fields.", e);
         }
     }
 

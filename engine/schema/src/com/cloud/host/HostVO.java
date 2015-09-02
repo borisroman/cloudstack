@@ -55,6 +55,9 @@ public class HostVO implements Host {
     @Column(name = "id")
     private long id;
 
+    @Column(name = "uuid")
+    private byte[] uuid;
+
     @Column(name = "disconnected")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date disconnectedOn;
@@ -62,9 +65,6 @@ public class HostVO implements Host {
     @Column(name = "name", nullable = false)
     private String name = null;
 
-    /**
-     * Note: There is no setter for status because it has to be set in the dao code.
-     */
     @Column(name = "status", nullable = false)
     private Status status = null;
 
@@ -72,41 +72,38 @@ public class HostVO implements Host {
     @Enumerated(value = EnumType.STRING)
     private Type type;
 
-    @Column(name = "private_ip_address", nullable = false)
-    private String privateIpAddress;
+    @Column(name = "public_ipv4_address")
+    private String publicIPv4Address;
 
-    @Column(name = "private_mac_address", nullable = false)
-    private String privateMacAddress;
-
-    @Column(name = "private_netmask", nullable = false)
-    private String privateNetmask;
-
-    @Column(name = "public_netmask")
-    private String publicNetmask;
-
-    @Column(name = "public_ip_address")
-    private String publicIpAddress;
+    @Column(name = "public_ipv4_netmask")
+    private String publicIPv4Netmask;
 
     @Column(name = "public_mac_address")
     private String publicMacAddress;
 
-    @Column(name = "storage_ip_address")
-    private String storageIpAddress;
+    @Column(name = "private_ipv4_address", nullable = false)
+    private String privateIPv4Address;
 
-    @Column(name = "cluster_id")
-    private Long clusterId;
+    @Column(name = "private_ipv4_netmask", nullable = false)
+    private String privateIPv4Netmask;
 
-    @Column(name = "storage_netmask")
-    private String storageNetmask;
+    @Column(name = "private_mac_address", nullable = false)
+    private String privateMacAddress;
+
+    @Column(name = "storage_ipv4_address")
+    private String storageIPv4Address;
+
+    @Column(name = "storage_ipv4_netmask")
+    private String storageIPv4Netmask;
 
     @Column(name = "storage_mac_address")
     private String storageMacAddress;
 
-    @Column(name = "storage_ip_address_2")
-    private String storageIpAddressDeux;
+    @Column(name = "storage_ipv4_address_2")
+    private String storageIPv4AddressDeux;
 
-    @Column(name = "storage_netmask_2")
-    private String storageNetmaskDeux;
+    @Column(name = "storage_ipv4_netmask_2")
+    private String storageIPv4NetmaskDeux;
 
     @Column(name = "storage_mac_address_2")
     private String storageMacAddressDeux;
@@ -122,7 +119,7 @@ public class HostVO implements Host {
     private String resource;
 
     @Column(name = "fs_type")
-    private StoragePoolType fsType;
+    private StoragePoolType storagePoolType;
 
     @Column(name = "available")
     private boolean available = true;
@@ -138,10 +135,61 @@ public class HostVO implements Host {
     private String hypervisorVersion;
 
     @Column(name = "update_count", updatable = true, nullable = false)
-    protected long updated;    // This field should be updated everytime the state is updated.  There's no set method in the vo object because it is done with in the dao code.
+    protected long updated;
 
-    @Column(name = "uuid")
-    private String uuid;
+    @Column(name = "data_center_id", nullable = false)
+    private long dataCenterId;
+
+    @Column(name = "pod_id")
+    private Long podId;
+
+    @Column(name = "cluster_id")
+    private Long clusterId;
+
+    @Column(name = "cpu_sockets")
+    private Integer cpuSockets;
+
+    @Column(name = "cpus")
+    private Integer cpus;
+
+    @Column(name = "url")
+    private String storageUrl;
+
+    @Column(name = "speed")
+    private Long speed;
+
+    @Column(name = "ram")
+    private long totalMemory;
+
+    @Column(name = "parent", nullable = false)
+    private String parent;
+
+    @Column(name = "guid", updatable = true, nullable = false)
+    private String guid;
+
+    @Column(name = "capabilities")
+    private String caps;
+
+    @Column(name = "total_size")
+    private Long totalSize;
+
+    @Column(name = "last_ping")
+    private long lastPinged;
+
+    @Column(name = "mgmt_server_id")
+    private Long managementServerId;
+
+    @Column(name = "dom0_memory")
+    private long dom0MinMemory;
+
+    @Column(name = "version")
+    private String version;
+
+    @Column(name = GenericDao.CREATED_COLUMN)
+    private Date created;
+
+    @Column(name = GenericDao.REMOVED_COLUMN)
+    private Date removed;
 
     // This is a delayed load value.  If the value is null,
     // then this field has not been loaded yet.
@@ -325,57 +373,6 @@ public class HostVO implements Host {
         this.groupDetails = groupDetails;
     }
 
-    @Column(name = "data_center_id", nullable = false)
-    private long dataCenterId;
-
-    @Column(name = "pod_id")
-    private Long podId;
-
-    @Column(name = "cpu_sockets")
-    private Integer cpuSockets;
-
-    @Column(name = "cpus")
-    private Integer cpus;
-
-    @Column(name = "url")
-    private String storageUrl;
-
-    @Column(name = "speed")
-    private Long speed;
-
-    @Column(name = "ram")
-    private long totalMemory;
-
-    @Column(name = "parent", nullable = false)
-    private String parent;
-
-    @Column(name = "guid", updatable = true, nullable = false)
-    private String guid;
-
-    @Column(name = "capabilities")
-    private String caps;
-
-    @Column(name = "total_size")
-    private Long totalSize;
-
-    @Column(name = "last_ping")
-    private long lastPinged;
-
-    @Column(name = "mgmt_server_id")
-    private Long managementServerId;
-
-    @Column(name = "dom0_memory")
-    private long dom0MinMemory;
-
-    @Column(name = "version")
-    private String version;
-
-    @Column(name = GenericDao.CREATED_COLUMN)
-    private Date created;
-
-    @Column(name = GenericDao.REMOVED_COLUMN)
-    private Date removed;
-
     public HostVO(String guid) {
         this.guid = guid;
         this.status = Status.Creating;
@@ -482,6 +479,7 @@ public class HostVO implements Host {
         this.disconnectedOn = disconnectedOn;
     }
 
+    @Override
     public String getStorageUrl() {
         return storageUrl;
     }

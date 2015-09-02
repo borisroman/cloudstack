@@ -30,10 +30,9 @@ import java.util.List;
 
 import javax.naming.ConfigurationException;
 
+import org.apache.cloudstack.engine.orchestration.service.NetworkOrchestrationService;
 import org.junit.Before;
 import org.junit.Test;
-
-import org.apache.cloudstack.engine.orchestration.service.NetworkOrchestrationService;
 
 import com.cloud.agent.AgentManager;
 import com.cloud.agent.api.Answer;
@@ -212,7 +211,6 @@ public class CiscoVnmcElementTest {
         when(publicIp.getVlanTag()).thenReturn("123");
         when(publicIp.getGateway()).thenReturn("1.1.1.1");
         when(publicIp.getNetmask()).thenReturn("1.1.1.1");
-        when(publicIp.getMacAddress()).thenReturn(null);
         when(publicIp.isOneToOneNat()).thenReturn(true);
         when(_ipAddrMgr.assignSourceNatIpAddressToGuestNetwork(acc, network)).thenReturn(publicIp);
 

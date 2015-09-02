@@ -732,20 +732,20 @@ public class Ovm3HypervisorSupport {
         try {
             Boolean alive = csp.dom0CheckStorageHealth(config.getAgentScriptsDir(),
                     config.getAgentCheckStorageScript(),
-                    cmd.getHost().getGuid(),
+                    cmd.getHost().getUuid(),
                     config.getAgentStorageCheckTimeout());
             String msg = "";
             if (alive == null) {
-                    msg = "storage check failed for " + cmd.getHost().getGuid();
+                    msg = "storage check failed for " + cmd.getHost().getUuid();
             } else if (alive) {
-                    msg = "storage check ok for " + cmd.getHost().getGuid();
+                    msg = "storage check ok for " + cmd.getHost().getUuid();
             } else {
-                    msg = "storage dead for " + cmd.getHost().getGuid();
+                    msg = "storage dead for " + cmd.getHost().getUuid();
             }
             LOGGER.debug(msg);
             return new CheckOnHostAnswer(cmd, alive, msg);
         } catch (Ovm3ResourceException e) {
-            return new CheckOnHostAnswer(cmd, false, "Error while checking storage for " +cmd.getHost().getGuid() +": " + e.getMessage());
+            return new CheckOnHostAnswer(cmd, false, "Error while checking storage for " +cmd.getHost().getUuid() +": " + e.getMessage());
         }
     }
 }

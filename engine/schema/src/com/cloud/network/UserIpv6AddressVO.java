@@ -51,9 +51,6 @@ public class UserIpv6AddressVO implements UserIpv6Address {
     @Column(name = "state")
     private State state;
 
-    @Column(name = "mac_address")
-    private String macAddress;
-
     @Column(name = "source_network_id")
     private Long sourceNetworkId;
 
@@ -79,12 +76,11 @@ public class UserIpv6AddressVO implements UserIpv6Address {
         uuid = UUID.randomUUID().toString();
     }
 
-    public UserIpv6AddressVO(String address, long dataCenterId, String macAddress, long vlanDbId) {
+    public UserIpv6AddressVO(String address, long dataCenterId, long vlanDbId) {
         this.address = address;
         this.dataCenterId = dataCenterId;
         vlanId = vlanDbId;
         state = State.Free;
-        setMacAddress(macAddress);
         uuid = UUID.randomUUID().toString();
     }
 
@@ -146,15 +142,6 @@ public class UserIpv6AddressVO implements UserIpv6Address {
     @Override
     public void setState(State state) {
         this.state = state;
-    }
-
-    @Override
-    public String getMacAddress() {
-        return macAddress;
-    }
-
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
     }
 
     public void setSourceNetworkId(Long sourceNetworkId) {

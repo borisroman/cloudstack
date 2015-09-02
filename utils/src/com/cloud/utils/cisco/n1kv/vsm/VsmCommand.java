@@ -19,6 +19,7 @@
 
 package com.cloud.utils.cisco.n1kv.vsm;
 
+import java.net.InetAddress;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -391,7 +392,7 @@ public class VsmCommand {
         }
     }
 
-    public static String getVServiceNode(String vlanId, String ipAddr) {
+    public static String getVServiceNode(String vlanId, InetAddress ipAddr) {
         try {
             // Create the document and root element.
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -424,7 +425,7 @@ public class VsmCommand {
         }
     }
 
-    private static Element configVServiceNodeDetails(Document doc, String vlanId, String ipAddr) {
+    private static Element configVServiceNodeDetails(Document doc, String vlanId, InetAddress ipAddr) {
         // In mode, exec_configure.
         Element configure = doc.createElementNS(s_ciscons, "nxos:configure");
         Element modeConfigure = doc.createElement("nxos:" + s_configuremode);
@@ -440,7 +441,7 @@ public class VsmCommand {
 
         Element address = doc.createElement(s_paramvalue);
         address.setAttribute("isKey", "true");
-        address.setTextContent(ipAddr);
+        address.setTextContent(ipAddr.getHostAddress());
 
         // ip address %ipAddr%
         modeConfigure.appendChild(doc.createElement("ip")).appendChild(doc.createElement("address")).appendChild(doc.createElement("value")).appendChild(address);

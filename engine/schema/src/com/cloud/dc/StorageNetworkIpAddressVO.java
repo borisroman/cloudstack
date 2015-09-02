@@ -54,9 +54,6 @@ public class StorageNetworkIpAddressVO implements InternalIdentity {
     @Column(name = "netmask", table = "dc_storage_network_ip_range", insertable = false, updatable = false)
     private String netmask;
 
-    @Column(name = "mac_address")
-    long mac;
-
     @Column(name = "vlan", table = "dc_storage_network_ip_range", insertable = false, updatable = false)
     Integer vlan;
 
@@ -93,14 +90,6 @@ public class StorageNetworkIpAddressVO implements InternalIdentity {
 
     public void setRangeId(long id) {
         this.rangeId = id;
-    }
-
-    public long getMac() {
-        return mac;
-    }
-
-    public void setMac(long mac) {
-        this.mac = mac;
     }
 
     public String getNetmask() {

@@ -21,21 +21,12 @@ import java.util.List;
 import com.cloud.dc.DataCenterIpAddressVO;
 import com.cloud.dc.DataCenterVO;
 import com.cloud.dc.DataCenterVnetVO;
-import com.cloud.utils.Pair;
 import com.cloud.utils.db.GenericDao;
 
 public interface DataCenterDao extends GenericDao<DataCenterVO, Long> {
     DataCenterVO findByName(String name);
 
-    /**
-     * @param id data center id
-     * @return a pair of mac address strings.  The first one is private and second is public.
-     */
-    String[] getNextAvailableMacAddressPair(long id);
-
-    String[] getNextAvailableMacAddressPair(long id, long mask);
-
-    Pair<String, Long> allocatePrivateIpAddress(long id, long podId, long instanceId, String reservationId);
+    String allocatePrivateIpAddress(long id, long podId, long instanceId, String reservationId);
 
     DataCenterIpAddressVO allocatePrivateIpAddress(long id, String reservationId);
 

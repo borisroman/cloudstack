@@ -188,7 +188,7 @@ public class PrivateNetworkGuru extends AdapterBase implements NetworkGuru {
             String vlanTag = BroadcastDomainType.getValue(network.getBroadcastUri());
             String netmask = NetUtils.getCidrNetmask(network.getCidr());
             PrivateIpAddress ip =
-                new PrivateIpAddress(ipVO, vlanTag, network.getGateway(), netmask, NetUtils.long2Mac(NetUtils.createSequenceBasedMacAddress(ipVO.getMacAddress())));
+                new PrivateIpAddress(ipVO, vlanTag, network.getGateway(), netmask);
 
             nic.setIPv4Address(ip.getIpAddress());
             nic.setIPv4Gateway(ip.getGateway());
@@ -198,7 +198,9 @@ public class PrivateNetworkGuru extends AdapterBase implements NetworkGuru {
             nic.setBroadcastType(BroadcastDomainType.Vlan);
             nic.setFormat(AddressFormat.Ip4);
             nic.setReservationId(String.valueOf(ip.getBroadcastUri()));
-            nic.setMacAddress(ip.getMacAddress());
+
+            // @TODO Set retrieve and store mac!
+            //nic.setMacAddress(ip.getMacAddress());
         }
 
         nic.setIPv4Dns1(dc.getDns1());

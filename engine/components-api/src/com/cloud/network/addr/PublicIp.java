@@ -23,23 +23,20 @@ import com.cloud.network.IpAddress;
 import com.cloud.network.PublicIpAddress;
 import com.cloud.network.dao.IPAddressVO;
 import com.cloud.utils.net.Ip;
-import com.cloud.utils.net.NetUtils;
 
 /**
  */
 public class PublicIp implements PublicIpAddress {
     IPAddressVO _addr;
     VlanVO _vlan;
-    String macAddress;
 
-    public PublicIp(IPAddressVO addr, VlanVO vlan, long macAddress) {
+    public PublicIp(IPAddressVO addr, VlanVO vlan) {
         _addr = addr;
         _vlan = vlan;
-        this.macAddress = NetUtils.long2Mac(macAddress);
     }
 
     public static PublicIp createFromAddrAndVlan(IPAddressVO addr, VlanVO vlan) {
-        return new PublicIp(addr, vlan, NetUtils.createSequenceBasedMacAddress(addr.getMacAddress()));
+        return new PublicIp(addr, vlan);
     }
 
     @Override
@@ -118,11 +115,6 @@ public class PublicIp implements PublicIpAddress {
 
     public VlanVO vlan() {
         return _vlan;
-    }
-
-    @Override
-    public String getMacAddress() {
-        return macAddress;
     }
 
     @Override
@@ -227,10 +219,6 @@ public class PublicIp implements PublicIpAddress {
 
     public void setPortable(boolean portable) {
         _addr.setPortable(portable);
-    }
-
-    public Long getIpMacAddress() {
-        return  _addr.getMacAddress();
     }
 
     @Override

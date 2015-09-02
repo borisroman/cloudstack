@@ -19,19 +19,21 @@
 
 package com.cloud.agent.api;
 
+import java.net.InetAddress;
+
 public class RebootRouterCommand extends RebootCommand {
 
-    protected String privateIp;
+    protected InetAddress privateIp;
 
     protected RebootRouterCommand() {
     }
 
-    public RebootRouterCommand(String vmName, String privateIp) {
+    public RebootRouterCommand(String vmName, InetAddress privateIp) {
         super(vmName);
         this.privateIp = privateIp;
     }
 
-    public String getPrivateIpAddress() {
+    public InetAddress getPrivateIpAddress() {
         return privateIp;
     }
 

@@ -25,16 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.cloud.user.User;
-import junit.framework.Assert;
-import junit.framework.TestCase;
-
-import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import org.apache.cloudstack.api.command.user.region.ha.gslb.AssignToGlobalLoadBalancerRuleCmd;
 import org.apache.cloudstack.api.command.user.region.ha.gslb.CreateGlobalLoadBalancerRuleCmd;
 import org.apache.cloudstack.api.command.user.region.ha.gslb.DeleteGlobalLoadBalancerRuleCmd;
@@ -43,6 +33,11 @@ import org.apache.cloudstack.context.CallContext;
 import org.apache.cloudstack.framework.config.dao.ConfigurationDao;
 import org.apache.cloudstack.region.RegionVO;
 import org.apache.cloudstack.region.dao.RegionDao;
+import org.apache.log4j.Logger;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.cloud.agent.AgentManager;
 import com.cloud.exception.InvalidParameterValueException;
@@ -58,9 +53,13 @@ import com.cloud.region.ha.GlobalLoadBalancerRule;
 import com.cloud.user.Account;
 import com.cloud.user.AccountManager;
 import com.cloud.user.AccountVO;
+import com.cloud.user.User;
 import com.cloud.user.UserVO;
 import com.cloud.utils.db.TransactionLegacy;
 import com.cloud.utils.net.Ip;
+
+import junit.framework.Assert;
+import junit.framework.TestCase;
 
 public class GlobalLoadBalancingRulesServiceImplTest extends TestCase {
 
@@ -553,7 +552,7 @@ public class GlobalLoadBalancingRulesServiceImplTest extends TestCase {
         dcID.set(networkVo, new Long(1));
         when(gslbServiceImpl._networkDao.findById(new Long(1))).thenReturn(networkVo);
 
-        IPAddressVO ip = new IPAddressVO(new Ip("10.1.1.1"), 1, 1, 1, true);
+        IPAddressVO ip = new IPAddressVO(new Ip("10.1.1.1"), 1, 1, true);
         when(gslbServiceImpl._ipAddressDao.findById(new Long(1))).thenReturn(ip);
 
         try {
@@ -774,7 +773,7 @@ public class GlobalLoadBalancingRulesServiceImplTest extends TestCase {
 
         when(gslbServiceImpl._gslbLbMapDao.findByGslbRuleIdAndLbRuleId(new Long(1), new Long(1))).thenReturn(gslbLbMap);
 
-        IPAddressVO ip = new IPAddressVO(new Ip("10.1.1.1"), 1, 1, 1, true);
+        IPAddressVO ip = new IPAddressVO(new Ip("10.1.1.1"), 1, 1, true);
         when(gslbServiceImpl._ipAddressDao.findById(new Long(1))).thenReturn(ip);
 
         gslbServiceImpl.removeFromGlobalLoadBalancerRule(removeFromGslbCmd);

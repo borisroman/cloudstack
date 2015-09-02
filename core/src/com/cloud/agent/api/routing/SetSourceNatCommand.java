@@ -19,17 +19,17 @@
 
 package com.cloud.agent.api.routing;
 
-import com.cloud.agent.api.to.IpAddressTO;
+import com.cloud.agent.api.to.NicTO;
 
 public class SetSourceNatCommand extends NetworkElementCommand {
-    IpAddressTO ipAddress;
+    NicTO nicTO;
     boolean add;
 
     protected SetSourceNatCommand() {
     }
 
-    public SetSourceNatCommand(IpAddressTO ip, boolean add) {
-        this.ipAddress = ip;
+    public SetSourceNatCommand(NicTO nicTO, boolean add) {
+        this.nicTO = nicTO;
         this.add = add;
     }
 
@@ -38,8 +38,8 @@ public class SetSourceNatCommand extends NetworkElementCommand {
         return false;
     }
 
-    public IpAddressTO getIpAddress() {
-        return ipAddress;
+    public NicTO getNicTO() {
+        return nicTO;
     }
 
 }

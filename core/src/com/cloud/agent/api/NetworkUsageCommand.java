@@ -19,22 +19,24 @@
 
 package com.cloud.agent.api;
 
+import java.net.InetAddress;
+
 import com.cloud.agent.api.LogLevel.Log4jLevel;
 
 @LogLevel(Log4jLevel.Trace)
 public class NetworkUsageCommand extends Command {
-    private String privateIP;
+    private InetAddress privateIP;
     private String domRName;
     private String option;
     boolean forVpc = false;
-    private String gatewayIP;
+    private InetAddress gatewayIP;
     private String vpcCIDR;
 
     protected NetworkUsageCommand() {
 
     }
 
-    public NetworkUsageCommand(String privateIP, String domRName, boolean forVpc, String gatewayIP) {
+    public NetworkUsageCommand(InetAddress privateIP, String domRName, boolean forVpc, InetAddress gatewayIP) {
         this.privateIP = privateIP;
         this.domRName = domRName;
         this.forVpc = forVpc;
@@ -42,14 +44,14 @@ public class NetworkUsageCommand extends Command {
         this.option = "get";
     }
 
-    public NetworkUsageCommand(String privateIP, String domRName, String option, boolean forVpc) {
+    public NetworkUsageCommand(InetAddress privateIP, String domRName, String option, boolean forVpc) {
         this.privateIP = privateIP;
         this.domRName = domRName;
         this.option = option;
         this.forVpc = forVpc;
     }
 
-    public NetworkUsageCommand(String privateIP, String domRName, boolean forVpc, String gatewayIP, String vpcCIDR) {
+    public NetworkUsageCommand(InetAddress privateIP, String domRName, boolean forVpc, InetAddress gatewayIP, String vpcCIDR) {
         this.privateIP = privateIP;
         this.domRName = domRName;
         this.forVpc = forVpc;
@@ -58,7 +60,7 @@ public class NetworkUsageCommand extends Command {
         this.vpcCIDR = vpcCIDR;
     }
 
-    public NetworkUsageCommand(String privateIP, String domRName, String option, boolean forVpc, String gatewayIP) {
+    public NetworkUsageCommand(InetAddress privateIP, String domRName, String option, boolean forVpc, InetAddress gatewayIP) {
         this.privateIP = privateIP;
         this.domRName = domRName;
         this.forVpc = forVpc;
@@ -66,7 +68,7 @@ public class NetworkUsageCommand extends Command {
         this.option = option;
     }
 
-    public String getPrivateIP() {
+    public InetAddress getPrivateIP() {
         return privateIP;
     }
 
@@ -86,7 +88,7 @@ public class NetworkUsageCommand extends Command {
         return vpcCIDR;
     }
 
-    public String getGatewayIP() {
+    public InetAddress getGatewayIP() {
         return gatewayIP;
     }
 

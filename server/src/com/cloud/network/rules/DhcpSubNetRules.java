@@ -139,7 +139,6 @@ public class DhcpSubNetRules extends RuleApplier {
                 // this means we did not create an IP alias on the router.
                 _nicAlias = new NicIpAliasVO(domrGuestNic.getId(), _routerAliasIp, _router.getId(), CallContext.current().getCallingAccountId(), _network.getDomainId(),
                         _nic.getNetworkId(), _nic.getIPv4Gateway(), _nic.getIPv4Netmask());
-                _nicAlias.setAliasCount(routerPublicIP.getIpMacAddress());
                 nicIpAliasDao.persist(_nicAlias);
 
                 final boolean result = visitor.visit(this);

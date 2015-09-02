@@ -16,39 +16,96 @@
 // under the License.
 package com.cloud.agent.api.to;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
-public class NicTO extends NetworkTO {
-    int deviceId;
-    Integer networkRateMbps;
-    Integer networkRateMulticastMbps;
-    boolean defaultNic;
-    boolean pxeDisable;
-    String nicUuid;
-    List<String> nicSecIps;
+import com.cloud.utils.net.MacAddress;
 
+/**
+ * Transferable Object NicTO
+ *
+ * Transfers information about a Nic.
+ */
+public class NicTO {
+    private UUID uuid;
+    private String name;
+    private MacAddress macAddress;
+    private int deviceId;
+    private int networkRateMbps;
+    private int networkRateMulticastMbps;
+    private boolean add; // FIXME What does it do? Find out after refactor.
+    private boolean defaultNic;
+    private boolean newNic;
+    private boolean pxeDisable;
+    private Set<IPv4TO> iPv4TOs;
+    private Set<IPv6TO> iPv6TOs;
+    private NetworkTO networkTO;
+
+    /**
+     * Default constructor
+     */
     public NicTO() {
-        super();
+        iPv4TOs = new HashSet<>();
+        iPv6TOs = new HashSet<>();
+        networkTO = new NetworkTO();
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public MacAddress getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(MacAddress macAddress) {
+        this.macAddress = macAddress;
+    }
+
+
+    public int getDeviceId() {
+        return deviceId;
     }
 
     public void setDeviceId(int deviceId) {
         this.deviceId = deviceId;
     }
 
-    public int getDeviceId() {
-        return deviceId;
-    }
-
-    public Integer getNetworkRateMbps() {
+    public int getNetworkRateMbps() {
         return networkRateMbps;
     }
 
-    public void setNetworkRateMbps(Integer networkRateMbps) {
+    public void setNetworkRateMbps(int networkRateMbps) {
         this.networkRateMbps = networkRateMbps;
     }
 
-    public Integer getNetworkRateMulticastMbps() {
+    public int getNetworkRateMulticastMbps() {
         return networkRateMulticastMbps;
+    }
+
+    public void setNetworkRateMulticastMbps(int networkRateMulticastMbps) {
+        this.networkRateMulticastMbps = networkRateMulticastMbps;
+    }
+
+    public boolean isAdd() {
+        return add;
+    }
+
+    public void setAdd(boolean add) {
+        this.add = add;
     }
 
     public boolean isDefaultNic() {
@@ -59,42 +116,43 @@ public class NicTO extends NetworkTO {
         this.defaultNic = defaultNic;
     }
 
+    public boolean isNewNic() {
+        return newNic;
+    }
+
+    public void setNewNic(boolean newNic) {
+        this.newNic = newNic;
+    }
+
+    public boolean isPxeDisable() {
+        return pxeDisable;
+    }
+
     public void setPxeDisable(boolean pxeDisable) {
         this.pxeDisable = pxeDisable;
     }
 
-    public boolean getPxeDisable() {
-        return pxeDisable;
+    public Set<IPv4TO> getIPv4TOs() {
+        return iPv4TOs;
     }
 
-    @Override
-    public String getUuid() {
-        return nicUuid;
+    public void setIPv4TOs(Set<IPv4TO> iPv4TOs) {
+        this.iPv4TOs = iPv4TOs;
     }
 
-    @Override
-    public void setUuid(String uuid) {
-        this.nicUuid = uuid;
+    public Set<IPv6TO> getIPv6TOs() {
+        return iPv6TOs;
     }
 
-    @Override
-    public String toString() {
-        return new StringBuilder("[Nic:").append(type).append("-").append(ip).append("-").append(broadcastUri).append("]").toString();
+    public void setIPv6TOs(Set<IPv6TO> iPv6TOs) {
+        this.iPv6TOs = iPv6TOs;
     }
 
-    public void setNicSecIps(List<String> secIps) {
-        this.nicSecIps = secIps;
+    public NetworkTO getNetworkTO() {
+        return networkTO;
     }
 
-    public List<String> getNicSecIps() {
-        return nicSecIps;
-    }
-
-    public String getNetworkUuid() {
-        return super.getUuid();
-    }
-
-    public void setNetworkUuid(String uuid) {
-        super.setUuid(uuid);
+    public void setNetworkTO(NetworkTO networkTO) {
+        this.networkTO = networkTO;
     }
 }

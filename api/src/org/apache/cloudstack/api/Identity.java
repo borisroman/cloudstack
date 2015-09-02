@@ -16,6 +16,8 @@
 // under the License.
 package org.apache.cloudstack.api;
 
+import java.util.UUID;
+
 public interface Identity {
-    String getUuid();
+    UUID getUuid();
 }

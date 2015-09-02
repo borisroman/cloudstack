@@ -14,27 +14,13 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-package com.cloud.vm;
-
-import org.apache.cloudstack.acl.ControlledEntity;
-import org.apache.cloudstack.api.Identity;
-import org.apache.cloudstack.api.InternalIdentity;
+package com.cloud.agent.api.to;
 
 /**
- * Nic represents one nic on the VM.
+ * Transferable Object NicTO
+ *
+ * Transfers information about a VirtualNic.
  */
-public interface NicSecondaryIp extends ControlledEntity, Identity, InternalIdentity {
-    /**
-     * @return id in the CloudStack database
-     */
-    @Override
-    long getId();
+public class VirtualNicTO extends NicTO {
 
-    long getNicId();
-
-    String getIp4Address();
-
-    long getNetworkId();
-
-    long getVmId();
 }

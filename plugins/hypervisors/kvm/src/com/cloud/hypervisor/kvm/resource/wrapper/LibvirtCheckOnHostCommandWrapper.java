@@ -28,7 +28,7 @@ import java.util.concurrent.Future;
 import com.cloud.agent.api.Answer;
 import com.cloud.agent.api.CheckOnHostCommand;
 import com.cloud.agent.api.to.HostTO;
-import com.cloud.agent.api.to.NetworkTO;
+import com.cloud.agent.api.to.NicTO;
 import com.cloud.hypervisor.kvm.resource.KVMHABase.NfsStoragePool;
 import com.cloud.hypervisor.kvm.resource.KVMHAChecker;
 import com.cloud.hypervisor.kvm.resource.KVMHAMonitor;
@@ -46,8 +46,8 @@ public final class LibvirtCheckOnHostCommandWrapper extends CommandWrapper<Check
 
         final List<NfsStoragePool> pools = monitor.getStoragePools();
         final HostTO host = command.getHost();
-        final NetworkTO privateNetwork = host.getPrivateNetwork();
-        final KVMHAChecker ha = new KVMHAChecker(pools, privateNetwork.getIp());
+        final NicTO privateNicTO = host.getPrivateNicTO();
+        final KVMHAChecker ha = new KVMHAChecker(pools, privateNicTO.getIPv4Addresses().get(0).getIPv4Address());
 
         final Future<Boolean> future = executors.submit(ha);
         try {

@@ -168,7 +168,6 @@ public class BaremetaNetworkGuru extends DirectPodBasedNetworkGuru {
                 nic.setBroadcastType(BroadcastDomainType.Native);
             }
             nic.setReservationId(String.valueOf(ip.getVlanTag()));
-            nic.setMacAddress(ip.getMacAddress());
         }
         nic.setIPv4Dns1(dc.getDns1());
         nic.setIPv4Dns2(dc.getDns2());

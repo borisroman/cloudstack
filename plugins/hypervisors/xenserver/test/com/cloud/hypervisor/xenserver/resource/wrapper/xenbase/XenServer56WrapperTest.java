@@ -19,9 +19,13 @@ package com.cloud.hypervisor.xenserver.resource.wrapper.xenbase;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,7 +91,17 @@ public class XenServer56WrapperTest {
     public void testNetworkUsageCommandSuccess() {
         final Connection conn = Mockito.mock(Connection.class);
 
-        final NetworkUsageCommand networkCommand = new NetworkUsageCommand("192.168.10.10", "domRName", false, "192.168.10.1");
+        InetAddress privateIP = null;
+        InetAddress gatewayIP = null;
+
+        try {
+            privateIP = InetAddress.getByName("192.168.10.10");
+            gatewayIP = InetAddress.getByName("192.168.10.1");
+        } catch (UnknownHostException e) {
+            fail();
+        }
+
+        final NetworkUsageCommand networkCommand = new NetworkUsageCommand(privateIP, "domRName", false, gatewayIP);
 
         final CitrixRequestWrapper wrapper = CitrixRequestWrapper.getInstance();
         assertNotNull(wrapper);
@@ -106,7 +120,17 @@ public class XenServer56WrapperTest {
     public void testNetworkUsageCommandFailure() {
         final Connection conn = Mockito.mock(Connection.class);
 
-        final NetworkUsageCommand networkCommand = new NetworkUsageCommand("192.168.10.10", "domRName", false, "192.168.10.1");
+        InetAddress privateIP = null;
+        InetAddress gatewayIP = null;
+
+        try {
+            privateIP = InetAddress.getByName("192.168.10.10");
+            gatewayIP = InetAddress.getByName("192.168.10.1");
+        } catch (UnknownHostException e) {
+            fail();
+        }
+
+        final NetworkUsageCommand networkCommand = new NetworkUsageCommand(privateIP, "domRName", false, gatewayIP);
 
         final CitrixRequestWrapper wrapper = CitrixRequestWrapper.getInstance();
         assertNotNull(wrapper);
@@ -125,7 +149,17 @@ public class XenServer56WrapperTest {
     public void testNetworkUsageCommandCreateVpc() {
         final ExecutionResult executionResult = Mockito.mock(ExecutionResult.class);
 
-        final NetworkUsageCommand networkCommand = new NetworkUsageCommand("192.168.10.10", "domRName", true, "192.168.10.1", "10.1.1.1/24");
+        InetAddress privateIP = null;
+        InetAddress gatewayIP = null;
+
+        try {
+            privateIP = InetAddress.getByName("192.168.10.10");
+            gatewayIP = InetAddress.getByName("192.168.10.1");
+        } catch (UnknownHostException e) {
+            fail();
+        }
+
+        final NetworkUsageCommand networkCommand = new NetworkUsageCommand(privateIP, "domRName", true, gatewayIP, "10.1.1.1/24");
 
         final CitrixRequestWrapper wrapper = CitrixRequestWrapper.getInstance();
         assertNotNull(wrapper);
@@ -143,7 +177,17 @@ public class XenServer56WrapperTest {
     public void testNetworkUsageCommandCreateVpcFailure() {
         final ExecutionResult executionResult = Mockito.mock(ExecutionResult.class);
 
-        final NetworkUsageCommand networkCommand = new NetworkUsageCommand("192.168.10.10", "domRName", true, "192.168.10.1", "10.1.1.1/24");
+        InetAddress privateIP = null;
+        InetAddress gatewayIP = null;
+
+        try {
+            privateIP = InetAddress.getByName("192.168.10.10");
+            gatewayIP = InetAddress.getByName("192.168.10.1");
+        } catch (UnknownHostException e) {
+            fail();
+        }
+
+        final NetworkUsageCommand networkCommand = new NetworkUsageCommand(privateIP, "domRName", true, gatewayIP, "10.1.1.1/24");
 
         final CitrixRequestWrapper wrapper = CitrixRequestWrapper.getInstance();
         assertNotNull(wrapper);

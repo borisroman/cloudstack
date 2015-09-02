@@ -29,10 +29,6 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import com.cloud.agent.api.routing.DeleteIpAliasCommand;
 import com.cloud.agent.api.routing.DnsMasqConfigCommand;
 import com.cloud.agent.api.routing.IpAliasTO;
@@ -57,6 +53,9 @@ import com.cloud.agent.resource.virtualnetwork.model.IpAssociation;
 import com.cloud.agent.resource.virtualnetwork.model.LoadBalancerRule;
 import com.cloud.agent.resource.virtualnetwork.model.LoadBalancerRules;
 import com.cloud.network.lb.LoadBalancingRule.LbDestination;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class ConfigHelperTest {
 
@@ -272,9 +271,9 @@ public class ConfigHelperTest {
 
     protected IpAssocVpcCommand generateIpAssocVpcCommand() {
         final List<IpAddressTO> ips = new ArrayList<IpAddressTO>();
-        ips.add(new IpAddressTO(1, "64.1.1.10", true, true, true, "vlan://64", "64.1.1.1", "255.255.255.0", "01:23:45:67:89:AB", 1000, false));
-        ips.add(new IpAddressTO(2, "64.1.1.11", false, false, true, "vlan://64", "64.1.1.1", "255.255.255.0", "01:23:45:67:89:AB", 1000, false));
-        ips.add(new IpAddressTO(3, "65.1.1.11", true, false, false, "vlan://65", "65.1.1.1", "255.255.255.0", "11:23:45:67:89:AB", 1000, false));
+        ips.add(new IpAddressTO(1, "64.1.1.10", true, true, true, "vlan://64", "64.1.1.1", "255.255.255.0", 1000, false));
+        ips.add(new IpAddressTO(2, "64.1.1.11", false, false, true, "vlan://64", "64.1.1.1", "255.255.255.0", 1000, false));
+        ips.add(new IpAddressTO(3, "65.1.1.11", true, false, false, "vlan://65", "65.1.1.1", "255.255.255.0", 1000, false));
 
         final IpAddressTO[] ipArray = ips.toArray(new IpAddressTO[ips.size()]);
         final IpAssocVpcCommand cmd = new IpAssocVpcCommand(ipArray);

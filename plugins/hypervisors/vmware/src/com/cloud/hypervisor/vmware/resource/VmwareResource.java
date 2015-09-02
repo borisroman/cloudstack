@@ -20,8 +20,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -41,62 +43,11 @@ import java.util.UUID;
 
 import javax.naming.ConfigurationException;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
-
-import com.google.gson.Gson;
-import com.vmware.vim25.AboutInfo;
-import com.vmware.vim25.BoolPolicy;
-import com.vmware.vim25.ClusterDasConfigInfo;
-import com.vmware.vim25.ComputeResourceSummary;
-import com.vmware.vim25.CustomFieldStringValue;
-import com.vmware.vim25.DVPortConfigInfo;
-import com.vmware.vim25.DVPortConfigSpec;
-import com.vmware.vim25.DatastoreSummary;
-import com.vmware.vim25.DistributedVirtualPort;
-import com.vmware.vim25.DistributedVirtualSwitchPortConnection;
-import com.vmware.vim25.DistributedVirtualSwitchPortCriteria;
-import com.vmware.vim25.DynamicProperty;
-import com.vmware.vim25.HostCapability;
-import com.vmware.vim25.HostHostBusAdapter;
-import com.vmware.vim25.HostInternetScsiHba;
-import com.vmware.vim25.ManagedObjectReference;
-import com.vmware.vim25.ObjectContent;
-import com.vmware.vim25.OptionValue;
-import com.vmware.vim25.PerfCounterInfo;
-import com.vmware.vim25.PerfEntityMetric;
-import com.vmware.vim25.PerfEntityMetricBase;
-import com.vmware.vim25.PerfMetricId;
-import com.vmware.vim25.PerfMetricIntSeries;
-import com.vmware.vim25.PerfMetricSeries;
-import com.vmware.vim25.PerfQuerySpec;
-import com.vmware.vim25.PerfSampleInfo;
-import com.vmware.vim25.RuntimeFaultFaultMsg;
-import com.vmware.vim25.ToolsUnavailableFaultMsg;
-import com.vmware.vim25.VMwareDVSPortSetting;
-import com.vmware.vim25.VimPortType;
-import com.vmware.vim25.VirtualDevice;
-import com.vmware.vim25.VirtualDeviceBackingInfo;
-import com.vmware.vim25.VirtualDeviceConfigSpec;
-import com.vmware.vim25.VirtualDeviceConfigSpecOperation;
-import com.vmware.vim25.VirtualDisk;
-import com.vmware.vim25.VirtualEthernetCard;
-import com.vmware.vim25.VirtualEthernetCardDistributedVirtualPortBackingInfo;
-import com.vmware.vim25.VirtualEthernetCardNetworkBackingInfo;
-import com.vmware.vim25.VirtualMachineConfigSpec;
-import com.vmware.vim25.VirtualMachineFileInfo;
-import com.vmware.vim25.VirtualMachineFileLayoutEx;
-import com.vmware.vim25.VirtualMachineFileLayoutExFileInfo;
-import com.vmware.vim25.VirtualMachineGuestOsIdentifier;
-import com.vmware.vim25.VirtualMachinePowerState;
-import com.vmware.vim25.VirtualMachineRelocateSpec;
-import com.vmware.vim25.VirtualMachineRelocateSpecDiskLocator;
-import com.vmware.vim25.VirtualMachineRuntimeInfo;
-import com.vmware.vim25.VmwareDistributedVirtualSwitchVlanIdSpec;
-
 import org.apache.cloudstack.storage.command.StorageSubSystemCommand;
 import org.apache.cloudstack.storage.to.TemplateObjectTO;
 import org.apache.cloudstack.storage.to.VolumeObjectTO;
+import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 
 import com.cloud.agent.IAgentControl;
 import com.cloud.agent.api.Answer;
@@ -275,6 +226,55 @@ import com.cloud.vm.VirtualMachine;
 import com.cloud.vm.VirtualMachine.PowerState;
 import com.cloud.vm.VirtualMachineName;
 import com.cloud.vm.VmDetailConstants;
+import com.google.gson.Gson;
+import com.vmware.vim25.AboutInfo;
+import com.vmware.vim25.BoolPolicy;
+import com.vmware.vim25.ClusterDasConfigInfo;
+import com.vmware.vim25.ComputeResourceSummary;
+import com.vmware.vim25.CustomFieldStringValue;
+import com.vmware.vim25.DVPortConfigInfo;
+import com.vmware.vim25.DVPortConfigSpec;
+import com.vmware.vim25.DatastoreSummary;
+import com.vmware.vim25.DistributedVirtualPort;
+import com.vmware.vim25.DistributedVirtualSwitchPortConnection;
+import com.vmware.vim25.DistributedVirtualSwitchPortCriteria;
+import com.vmware.vim25.DynamicProperty;
+import com.vmware.vim25.HostCapability;
+import com.vmware.vim25.HostHostBusAdapter;
+import com.vmware.vim25.HostInternetScsiHba;
+import com.vmware.vim25.ManagedObjectReference;
+import com.vmware.vim25.ObjectContent;
+import com.vmware.vim25.OptionValue;
+import com.vmware.vim25.PerfCounterInfo;
+import com.vmware.vim25.PerfEntityMetric;
+import com.vmware.vim25.PerfEntityMetricBase;
+import com.vmware.vim25.PerfMetricId;
+import com.vmware.vim25.PerfMetricIntSeries;
+import com.vmware.vim25.PerfMetricSeries;
+import com.vmware.vim25.PerfQuerySpec;
+import com.vmware.vim25.PerfSampleInfo;
+import com.vmware.vim25.RuntimeFaultFaultMsg;
+import com.vmware.vim25.ToolsUnavailableFaultMsg;
+import com.vmware.vim25.VMwareDVSPortSetting;
+import com.vmware.vim25.VimPortType;
+import com.vmware.vim25.VirtualDevice;
+import com.vmware.vim25.VirtualDeviceBackingInfo;
+import com.vmware.vim25.VirtualDeviceConfigSpec;
+import com.vmware.vim25.VirtualDeviceConfigSpecOperation;
+import com.vmware.vim25.VirtualDisk;
+import com.vmware.vim25.VirtualEthernetCard;
+import com.vmware.vim25.VirtualEthernetCardDistributedVirtualPortBackingInfo;
+import com.vmware.vim25.VirtualEthernetCardNetworkBackingInfo;
+import com.vmware.vim25.VirtualMachineConfigSpec;
+import com.vmware.vim25.VirtualMachineFileInfo;
+import com.vmware.vim25.VirtualMachineFileLayoutEx;
+import com.vmware.vim25.VirtualMachineFileLayoutExFileInfo;
+import com.vmware.vim25.VirtualMachineGuestOsIdentifier;
+import com.vmware.vim25.VirtualMachinePowerState;
+import com.vmware.vim25.VirtualMachineRelocateSpec;
+import com.vmware.vim25.VirtualMachineRelocateSpecDiskLocator;
+import com.vmware.vim25.VirtualMachineRuntimeInfo;
+import com.vmware.vim25.VmwareDistributedVirtualSwitchVlanIdSpec;
 
 public class VmwareResource implements StoragePoolResource, ServerResource, VmwareHostService, VirtualRouterDeployer {
     private static final Logger s_logger = Logger.getLogger(VmwareResource.class);
@@ -652,9 +652,9 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
     }
 
     protected NetworkUsageAnswer VPCNetworkUsage(NetworkUsageCommand cmd) {
-        String privateIp = cmd.getPrivateIP();
+        InetAddress privateIp = cmd.getPrivateIP();
         String option = cmd.getOption();
-        String publicIp = cmd.getGatewayIP();
+        InetAddress publicIp = cmd.getGatewayIP();
 
         String args = "-l " + publicIp + " ";
         if (option.equals("get")) {
@@ -699,7 +699,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
     }
 
     @Override
-    public ExecutionResult createFileInVR(String routerIp, String filePath, String fileName, String content) {
+    public ExecutionResult createFileInVR(InetAddress routerIp, String filePath, String fileName, String content) {
         VmwareManager mgr = getServiceContext().getStockObject(VmwareManager.CONTEXT_STOCK_NAME);
         File keyFile = mgr.getSystemVMKeyFile();
         try {
@@ -745,7 +745,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
     //      eth0:xx.xx.xx.xx
     //
     //
-    private int findRouterEthDeviceIndex(String domrName, String routerIp, String mac) throws Exception {
+    private int findRouterEthDeviceIndex(String domrName, InetAddress routerIp, String mac) throws Exception {
         VmwareManager mgr = getServiceContext().getStockObject(VmwareManager.CONTEXT_STOCK_NAME);
 
         s_logger.info("findRouterEthDeviceIndex. mac: " + mac);
@@ -804,13 +804,13 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
 
     protected ExecutionResult prepareNetworkElementCommand(SetupGuestNetworkCommand cmd) {
         NicTO nic = cmd.getNic();
-        String routerIp = getRouterSshControlIp(cmd);
+        InetAddress routerIp = getRouterSshControlIp(cmd);
         String domrName =
                 cmd.getAccessDetail(NetworkElementCommand.ROUTER_NAME);
 
         try {
             int ethDeviceNum = findRouterEthDeviceIndex(domrName, routerIp,
-                    nic.getMac());
+                    nic.getMacAddress());
             nic.setDeviceId(ethDeviceNum);
         } catch (Exception e) {
             String msg = "Prepare SetupGuestNetwork failed due to " + e.toString();
@@ -823,7 +823,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
 
     private ExecutionResult prepareNetworkElementCommand(IpAssocVpcCommand cmd) {
         String routerName = cmd.getAccessDetail(NetworkElementCommand.ROUTER_NAME);
-        String routerIp = getRouterSshControlIp(cmd);
+        InetAddress routerIp = getRouterSshControlIp(cmd);
 
         try {
             IpAddressTO[] ips = cmd.getIpAddresses();
@@ -851,7 +851,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
 
     protected ExecutionResult prepareNetworkElementCommand(SetSourceNatCommand cmd) {
         String routerName = cmd.getAccessDetail(NetworkElementCommand.ROUTER_NAME);
-        String routerIp = getRouterSshControlIp(cmd);
+        InetAddress routerIp = getRouterSshControlIp(cmd);
         IpAddressTO pubIp = cmd.getIpAddress();
 
         try {
@@ -869,11 +869,11 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
         NicTO nic = cmd.getNic();
         String routerName =
                 cmd.getAccessDetail(NetworkElementCommand.ROUTER_NAME);
-        String routerIp = getRouterSshControlIp(cmd);
+        InetAddress routerIp = getRouterSshControlIp(cmd);
 
         try {
             int ethDeviceNum = findRouterEthDeviceIndex(routerName, routerIp,
-                    nic.getMac());
+                    nic.getMacAddress());
             nic.setDeviceId(ethDeviceNum);
         } catch (Exception e) {
             String msg = "Prepare SetNetworkACL failed due to " + e.toString();
@@ -943,12 +943,12 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
                 dvSwitchUuid = dataCenterMo.getDvSwitchUuid(dvsMor);
                 s_logger.info("Preparing NIC device on dvSwitch : " + dvSwitchUuid);
                 nic =
-                        VmwareHelper.prepareDvNicDevice(vmMo, networkInfo.first(), nicDeviceType, networkInfo.second(), dvSwitchUuid, nicTo.getMac(), deviceNumber,
+                        VmwareHelper.prepareDvNicDevice(vmMo, networkInfo.first(), nicDeviceType, networkInfo.second(), dvSwitchUuid, nicTo.getMacAddress(), deviceNumber,
                                 deviceNumber + 1, true, true);
             } else {
                 s_logger.info("Preparing NIC device on network " + networkInfo.second());
                 nic =
-                        VmwareHelper.prepareNicDevice(vmMo, networkInfo.first(), nicDeviceType, networkInfo.second(), nicTo.getMac(), deviceNumber, deviceNumber + 1, true,
+                        VmwareHelper.prepareNicDevice(vmMo, networkInfo.first(), nicDeviceType, networkInfo.second(), nicTo.getMacAddress(), deviceNumber, deviceNumber + 1, true,
                                 true);
             }
 
@@ -1003,7 +1003,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
                 return new UnPlugNicAnswer(cmd, false, "Unable to execute unPlugNicCommand due to " + errMsg);
             }
              */
-            VirtualDevice nic = findVirtualNicDevice(vmMo, cmd.getNic().getMac());
+            VirtualDevice nic = findVirtualNicDevice(vmMo, cmd.getNic().getMacAddress());
             if (nic == null) {
                 return new UnPlugNicAnswer(cmd, true, "success");
             }
@@ -1114,7 +1114,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
 
             IpAddressTO[] ips = cmd.getIpAddresses();
             String routerName = cmd.getAccessDetail(NetworkElementCommand.ROUTER_NAME);
-            String controlIp = VmwareResource.getRouterSshControlIp(cmd);
+            InetAddress controlIp = VmwareResource.getRouterSshControlIp(cmd);
 
             VirtualMachineMO vmMo = hyperHost.findVmOnHyperHost(routerName);
 
@@ -1182,12 +1182,12 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
     }
 
     @Override
-    public ExecutionResult executeInVR(String routerIP, String script, String args) {
+    public ExecutionResult executeInVR(InetAddress routerIP, String script, String args) {
         return executeInVR(routerIP, script, args, 120);
     }
 
     @Override
-    public ExecutionResult executeInVR(String routerIP, String script, String args, int timeout) {
+    public ExecutionResult executeInVR(InetAddress routerIP, String script, String args, int timeout) {
         Pair<Boolean, String> result;
 
         //TODO: Password should be masked, cannot output to log directly
@@ -1212,7 +1212,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
 
     protected CheckSshAnswer execute(CheckSshCommand cmd) {
         String vmName = cmd.getName();
-        String privateIp = cmd.getIp();
+        InetAddress privateIp = cmd.getIp();
         int cmdPort = cmd.getPort();
 
         if (s_logger.isDebugEnabled()) {
@@ -1680,7 +1680,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
             for (NicTO nicTo : sortNicsByDeviceId(nics)) {
                 s_logger.info("Prepare NIC device based on NicTO: " + _gson.toJson(nicTo));
 
-                boolean configureVServiceInNexus = (nicTo.getType() == TrafficType.Guest) && (vmSpec.getDetails().containsKey("ConfigureVServiceInNexus"));
+                boolean configureVServiceInNexus = (nicTo.getNetwork().getType() == TrafficType.Guest) && (vmSpec.getDetails().containsKey("ConfigureVServiceInNexus"));
                 VirtualMachine.Type vmType = cmd.getVirtualMachine().getType();
                 Pair<ManagedObjectReference, String> networkInfo = prepareNetworkFromNicInfo(vmMo.getRunningHost(), nicTo, configureVServiceInNexus, vmType);
                 if (VmwareHelper.isDvPortGroup(networkInfo.first())) {
@@ -1691,12 +1691,12 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
                     dvSwitchUuid = dataCenterMo.getDvSwitchUuid(dvsMor);
                     s_logger.info("Preparing NIC device on dvSwitch : " + dvSwitchUuid);
                     nic =
-                            VmwareHelper.prepareDvNicDevice(vmMo, networkInfo.first(), nicDeviceType, networkInfo.second(), dvSwitchUuid, nicTo.getMac(), nicUnitNumber++,
+                            VmwareHelper.prepareDvNicDevice(vmMo, networkInfo.first(), nicDeviceType, networkInfo.second(), dvSwitchUuid, nicTo.getMacAddress(), nicUnitNumber++,
                                     i + 1, true, true);
                 } else {
                     s_logger.info("Preparing NIC device on network " + networkInfo.second());
                     nic =
-                            VmwareHelper.prepareNicDevice(vmMo, networkInfo.first(), nicDeviceType, networkInfo.second(), nicTo.getMac(), nicUnitNumber++, i + 1, true, true);
+                            VmwareHelper.prepareNicDevice(vmMo, networkInfo.first(), nicDeviceType, networkInfo.second(), nicTo.getMacAddress(), nicUnitNumber++, i + 1, true, true);
                 }
 
                 deviceConfigSpecArray[i] = new VirtualDeviceConfigSpec();
@@ -1962,11 +1962,11 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
     }
 
     private static void setNuageVspVrIpInExtraConfig(List<OptionValue> extraOptions, NicTO nicTo) {
-        URI broadcastUri = nicTo.getBroadcastUri();
+        URI broadcastUri = nicTo.getNetwork().getBroadcastUri();
         if (broadcastUri != null && broadcastUri.getScheme().equalsIgnoreCase(Networks.BroadcastDomainType.Vsp.scheme())) {
             String path = broadcastUri.getPath();
             OptionValue newVal = new OptionValue();
-            newVal.setKey("vsp.vr-ip." + nicTo.getMac());
+            newVal.setKey("vsp.vr-ip." + nicTo.getMacAddress());
             newVal.setValue(path.substring(1));
             extraOptions.add(newVal);
         }
@@ -1990,7 +1990,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
          */
         int nicIndex = 0;
         for (NicTO nicTo : sortNicsByDeviceId(vmSpec.getNics())) {
-            if (nicTo.getBroadcastType() == BroadcastDomainType.Lswitch) {
+            if (nicTo.getNetwork().getBroadcastType() == BroadcastDomainType.Lswitch) {
                 // We need to create a port with a unique vlan and pass the key to the nic device
                 s_logger.trace("Nic " + nicTo.toString() + " is connected to an NVP logicalswitch");
                 VirtualDevice nicVirtualDevice = vmMo.getNicDeviceByIndex(nicIndex);
@@ -2437,34 +2437,34 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
     }
 
     private String getPvlanInfo(NicTO nicTo) {
-        if (nicTo.getBroadcastType() == BroadcastDomainType.Pvlan) {
-            return NetUtils.getIsolatedPvlanFromUri(nicTo.getBroadcastUri());
+        if (nicTo.getNetwork().getBroadcastType() == BroadcastDomainType.Pvlan) {
+            return NetUtils.getIsolatedPvlanFromUri(nicTo.getNetwork().getBroadcastUri());
         }
         return null;
     }
 
     private String getVlanInfo(NicTO nicTo, String defaultVlan) {
-        if (nicTo.getBroadcastType() == BroadcastDomainType.Native) {
+        if (nicTo.getNetwork().getBroadcastType() == BroadcastDomainType.Native) {
             return defaultVlan;
-        } else if (nicTo.getBroadcastType() == BroadcastDomainType.Vlan || nicTo.getBroadcastType() == BroadcastDomainType.Pvlan) {
-            if (nicTo.getBroadcastUri() != null) {
-                if (nicTo.getBroadcastType() == BroadcastDomainType.Vlan)
+        } else if (nicTo.getNetwork().getBroadcastType() == BroadcastDomainType.Vlan || nicTo.getNetwork().getBroadcastType() == BroadcastDomainType.Pvlan) {
+            if (nicTo.getNetwork().getBroadcastUri() != null) {
+                if (nicTo.getNetwork().getBroadcastType() == BroadcastDomainType.Vlan)
                     // For vlan, the broadcast uri is of the form vlan://<vlanid>
                     // BroadcastDomainType recogniizes and handles this.
-                    return BroadcastDomainType.getValue(nicTo.getBroadcastUri());
+                    return BroadcastDomainType.getValue(nicTo.getNetwork().getBroadcastUri());
                 else
                     // for pvlan, the broacast uri will be of the form pvlan://<vlanid>-i<pvlanid>
                     // TODO consider the spread of functionality between BroadcastDomainType and NetUtils
-                    return NetUtils.getPrimaryPvlanFromUri(nicTo.getBroadcastUri());
+                    return NetUtils.getPrimaryPvlanFromUri(nicTo.getNetwork().getBroadcastUri());
             } else {
                 s_logger.warn("BroadcastType is not claimed as VLAN or PVLAN, but without vlan info in broadcast URI. Use vlan info from labeling: " + defaultVlan);
                 return defaultVlan;
             }
-        } else if (nicTo.getBroadcastType() == BroadcastDomainType.Lswitch) {
+        } else if (nicTo.getNetwork().getBroadcastType() == BroadcastDomainType.Lswitch) {
             // We don't need to set any VLAN id for an NVP logical switch
             return null;
-        } else if (nicTo.getBroadcastType() == BroadcastDomainType.Storage) {
-            URI broadcastUri = nicTo.getBroadcastUri();
+        } else if (nicTo.getNetwork().getBroadcastType() == BroadcastDomainType.Storage) {
+            URI broadcastUri = nicTo.getNetwork().getBroadcastUri();
             if (broadcastUri != null) {
                 String vlanId = BroadcastDomainType.getValue(broadcastUri);
                 s_logger.debug("Using VLAN [" + vlanId + "] from broadcast uri [" + broadcastUri + "]");
@@ -2472,7 +2472,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
             }
         }
 
-        s_logger.warn("Unrecognized broadcast type in VmwareResource, type: " + nicTo.getBroadcastType().toString() + ". Use vlan info from labeling: " + defaultVlan);
+        s_logger.warn("Unrecognized broadcast type in VmwareResource, type: " + nicTo.getNetwork().getBroadcastType().toString() + ". Use vlan info from labeling: " + defaultVlan);
         return defaultVlan;
     }
 
@@ -2492,7 +2492,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
             synchronized(hostMo.getMor().getValue().intern()) {
                 networkInfo = HypervisorHostHelper.prepareNetwork(switchName, namePrefix, hostMo, getVlanInfo(nicTo, vlanToken), nicTo.getNetworkRateMbps(),
                         nicTo.getNetworkRateMulticastMbps(), _opsTimeout,
-                        !namePrefix.startsWith("cloud.private"), nicTo.getBroadcastType(), nicTo.getUuid());
+                        !namePrefix.startsWith("cloud.private"), nicTo.getNetwork().getBroadcastType(), nicTo.getUuid());
             }
         }
         else {
@@ -2508,7 +2508,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
             }
             networkInfo = HypervisorHostHelper.prepareNetwork(switchName, namePrefix, hostMo, vlanId, svlanId,
                     nicTo.getNetworkRateMbps(), nicTo.getNetworkRateMulticastMbps(), _opsTimeout, switchType,
-                    _portsPerDvPortGroup, nicTo.getGateway(), configureVServiceInNexus, nicTo.getBroadcastType(), _vsmCredentials);
+                    _portsPerDvPortGroup, nicTo.getIPv4Addresses().get(0).getIPv4Address(), configureVServiceInNexus, nicTo.getNetwork().getBroadcastType(), _vsmCredentials);
         }
 
         return networkInfo;
@@ -2525,7 +2525,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
                 TrafficType.Storage
         };
 
-        TrafficType trafficType = nicTo.getType();
+        TrafficType trafficType = nicTo.getNetwork().getType();
         if (!Arrays.asList(supportedTrafficTypes).contains(trafficType)) {
             throw new CloudException("Traffic type " + trafficType.toString() + " for nic " + nicTo.toString() + " is not supported.");
         }
@@ -2555,7 +2555,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
         }
 
         if (switchName == null
-                && (nicTo.getType() == Networks.TrafficType.Control || nicTo.getType() == Networks.TrafficType.Management || nicTo.getType() == Networks.TrafficType.Storage)) {
+                && (nicTo.getNetwork().getType() == Networks.TrafficType.Control || nicTo.getNetwork().getType() == Networks.TrafficType.Management || nicTo.getNetwork().getType() == Networks.TrafficType.Storage)) {
             switchName = _privateNetworkVSwitchName;
         }
 
@@ -2571,18 +2571,18 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
     }
 
     private String getNetworkNamePrefix(NicTO nicTo) throws Exception {
-        if (nicTo.getType() == Networks.TrafficType.Guest) {
+        if (nicTo.getNetwork().getType() == Networks.TrafficType.Guest) {
             return "cloud.guest";
-        } else if (nicTo.getType() == Networks.TrafficType.Control || nicTo.getType() == Networks.TrafficType.Management) {
+        } else if (nicTo.getNetwork().getType() == Networks.TrafficType.Control || nicTo.getNetwork().getType() == Networks.TrafficType.Management) {
             return "cloud.private";
-        } else if (nicTo.getType() == Networks.TrafficType.Public) {
+        } else if (nicTo.getNetwork().getType() == Networks.TrafficType.Public) {
             return "cloud.public";
-        } else if (nicTo.getType() == Networks.TrafficType.Storage) {
+        } else if (nicTo.getNetwork().getType() == Networks.TrafficType.Storage) {
             return "cloud.storage";
-        } else if (nicTo.getType() == Networks.TrafficType.Vpn) {
-            throw new Exception("Unsupported traffic type: " + nicTo.getType().toString());
+        } else if (nicTo.getNetwork().getType() == Networks.TrafficType.Vpn) {
+            throw new Exception("Unsupported traffic type: " + nicTo.getNetwork().getType().toString());
         } else {
-            throw new Exception("Unsupported traffic type: " + nicTo.getType().toString());
+            throw new Exception("Unsupported traffic type: " + nicTo.getNetwork().getType().toString());
         }
     }
 
@@ -3875,7 +3875,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
             s_logger.info("Executing resource PingTestCommand: " + _gson.toJson(cmd));
         }
 
-        String controlIp = cmd.getRouterIp();
+        InetAddress controlIp = cmd.getRouterIp();
         if (controlIp != null) {
             String args = " -c 1 -n -q " + cmd.getPrivateIp();
             try {
@@ -4751,7 +4751,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
     }
 
 
-    protected String networkUsage(final String privateIpAddress, final String option, final String ethName) {
+    protected String networkUsage(final InetAddress privateIpAddress, final String option, final String ethName) {
         String args = null;
         if (option.equals("get")) {
             args = "-g";
@@ -4776,7 +4776,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
         return result.getDetails();
     }
 
-    private long[] getNetworkStats(String privateIP) {
+    private long[] getNetworkStats(InetAddress privateIP) {
         String result = networkUsage(privateIP, "get", null);
         long[] stats = new long[2];
         if (result != null) {
@@ -4794,7 +4794,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
         return stats;
     }
 
-    protected String connect(final String vmName, final String ipAddress, final int port) {
+    protected String connect(final String vmName, final InetAddress ipAddress, final int port) {
         long startTick = System.currentTimeMillis();
 
         // wait until we have at least been waiting for _ops_timeout time or
@@ -4836,7 +4836,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
         return "Unable to connect";
     }
 
-    protected String connect(final String vmname, final String ipAddress) {
+    protected String connect(final String vmname, final InetAddress ipAddress) {
         return connect(vmname, ipAddress, 3922);
     }
 
@@ -4871,9 +4871,16 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
         return entry;
     }
 
-    private static String getRouterSshControlIp(NetworkElementCommand cmd) {
-        String routerIp = cmd.getAccessDetail(NetworkElementCommand.ROUTER_IP);
-        String routerGuestIp = cmd.getAccessDetail(NetworkElementCommand.ROUTER_GUEST_IP);
+    private static InetAddress getRouterSshControlIp(NetworkElementCommand cmd) {
+        InetAddress routerIp = null;
+        InetAddress routerGuestIp = null;
+        try {
+            routerIp = InetAddress.getByName(cmd.getAccessDetail(NetworkElementCommand.ROUTER_IP));
+            routerGuestIp = InetAddress.getByName(cmd.getAccessDetail(NetworkElementCommand.ROUTER_GUEST_IP));
+        } catch (UnknownHostException e) {
+            new CloudRuntimeException("Failed to convert IP address to InetAddress from: " + e);
+        }
+
         String zoneNetworkType = cmd.getAccessDetail(NetworkElementCommand.ZONE_NETWORK_TYPE);
 
         if (routerGuestIp != null && zoneNetworkType != null && NetworkType.valueOf(zoneNetworkType) == NetworkType.Basic) {

@@ -32,7 +32,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.cloud.user.User;
+import org.apache.cloudstack.api.command.admin.vlan.DedicatePublicIpRangeCmd;
+import org.apache.cloudstack.api.command.admin.vlan.ReleasePublicIpRangeCmd;
+import org.apache.cloudstack.context.CallContext;
+import org.apache.cloudstack.engine.orchestration.service.NetworkOrchestrationService;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
@@ -41,10 +44,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.apache.cloudstack.api.command.admin.vlan.DedicatePublicIpRangeCmd;
-import org.apache.cloudstack.api.command.admin.vlan.ReleasePublicIpRangeCmd;
-import org.apache.cloudstack.context.CallContext;
-import org.apache.cloudstack.engine.orchestration.service.NetworkOrchestrationService;
 
 import com.cloud.configuration.Resource.ResourceType;
 import com.cloud.dc.AccountVlanMapVO;
@@ -58,8 +57,8 @@ import com.cloud.dc.dao.VlanDao;
 import com.cloud.exception.InvalidParameterValueException;
 import com.cloud.network.IpAddressManager;
 import com.cloud.network.Network;
-import com.cloud.network.NetworkModel;
 import com.cloud.network.Network.Capability;
+import com.cloud.network.NetworkModel;
 import com.cloud.network.dao.FirewallRulesDao;
 import com.cloud.network.dao.IPAddressDao;
 import com.cloud.network.dao.IPAddressVO;
@@ -68,6 +67,7 @@ import com.cloud.user.Account;
 import com.cloud.user.AccountManager;
 import com.cloud.user.AccountVO;
 import com.cloud.user.ResourceLimitService;
+import com.cloud.user.User;
 import com.cloud.user.UserVO;
 import com.cloud.user.dao.AccountDao;
 import com.cloud.utils.db.TransactionLegacy;
@@ -245,7 +245,7 @@ public class ConfigurationManagerTest {
         when(configurationMgr._zoneDao.findById(anyLong())).thenReturn(dc);
 
         List<IPAddressVO> ipAddressList = new ArrayList<IPAddressVO>();
-        IPAddressVO ipAddress = new IPAddressVO(new Ip("75.75.75.75"), 1, 0xaabbccddeeffL, 10, false);
+        IPAddressVO ipAddress = new IPAddressVO(new Ip("75.75.75.75"), 1, 10, false);
         ipAddressList.add(ipAddress);
         when(configurationMgr._publicIpAddressDao.listByVlanId(anyLong())).thenReturn(ipAddressList);
 
@@ -289,7 +289,7 @@ public class ConfigurationManagerTest {
         when(configurationMgr._zoneDao.findById(anyLong())).thenReturn(dc);
 
         List<IPAddressVO> ipAddressList = new ArrayList<IPAddressVO>();
-        IPAddressVO ipAddress = new IPAddressVO(new Ip("75.75.75.75"), 1, 0xaabbccddeeffL, 10, false);
+        IPAddressVO ipAddress = new IPAddressVO(new Ip("75.75.75.75"), 1, 10, false);
         ipAddressList.add(ipAddress);
         when(configurationMgr._publicIpAddressDao.listByVlanId(anyLong())).thenReturn(ipAddressList);
 
@@ -316,7 +316,7 @@ public class ConfigurationManagerTest {
         when(configurationMgr._zoneDao.findById(anyLong())).thenReturn(dc);
 
         List<IPAddressVO> ipAddressList = new ArrayList<IPAddressVO>();
-        IPAddressVO ipAddress = new IPAddressVO(new Ip("75.75.75.75"), 1, 0xaabbccddeeffL, 10, false);
+        IPAddressVO ipAddress = new IPAddressVO(new Ip("75.75.75.75"), 1, 10, false);
         ipAddressList.add(ipAddress);
         when(configurationMgr._publicIpAddressDao.listByVlanId(anyLong())).thenReturn(ipAddressList);
 
@@ -343,7 +343,7 @@ public class ConfigurationManagerTest {
 
         // one of the ip addresses of the range is allocated to different account
         List<IPAddressVO> ipAddressList = new ArrayList<IPAddressVO>();
-        IPAddressVO ipAddress = new IPAddressVO(new Ip("75.75.75.75"), 1, 0xaabbccddeeffL, 10, false);
+        IPAddressVO ipAddress = new IPAddressVO(new Ip("75.75.75.75"), 1, 10, false);
         ipAddress.setAllocatedToAccountId(1L);
         ipAddressList.add(ipAddress);
         when(configurationMgr._publicIpAddressDao.listByVlanId(anyLong())).thenReturn(ipAddressList);
@@ -394,7 +394,7 @@ public class ConfigurationManagerTest {
         when(configurationMgr._publicIpAddressDao.countIPs(anyLong(), anyLong(), anyBoolean())).thenReturn(1);
 
         List<IPAddressVO> ipAddressList = new ArrayList<IPAddressVO>();
-        IPAddressVO ipAddress = new IPAddressVO(new Ip("75.75.75.75"), 1, 0xaabbccddeeffL, 10, false);
+        IPAddressVO ipAddress = new IPAddressVO(new Ip("75.75.75.75"), 1, 10, false);
         ipAddressList.add(ipAddress);
         when(configurationMgr._publicIpAddressDao.listByVlanId(anyLong())).thenReturn(ipAddressList);
 

@@ -41,9 +41,6 @@ public class PrivateIpVO implements InternalIdentity {
     @Column(name = "ip_address", updatable = false, nullable = false)
     String ipAddress;
 
-    @Column(name = "mac_address")
-    private long macAddress;
-
     @Column(name = "taken")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date takenAt;
@@ -60,10 +57,9 @@ public class PrivateIpVO implements InternalIdentity {
     public PrivateIpVO() {
     }
 
-    public PrivateIpVO(String ipAddress, long networkId, long macAddress, long vpcId, boolean sourceNat) {
+    public PrivateIpVO(String ipAddress, long networkId, long vpcId, boolean sourceNat) {
         this.ipAddress = ipAddress;
         this.networkId = networkId;
-        this.macAddress = macAddress;
         this.vpcId = vpcId;
         this.sourceNat = sourceNat;
     }
@@ -87,10 +83,6 @@ public class PrivateIpVO implements InternalIdentity {
     @Override
     public long getId() {
         return id;
-    }
-
-    public long getMacAddress() {
-        return macAddress;
     }
 
     public Long getVpcId() {

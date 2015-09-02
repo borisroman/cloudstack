@@ -21,12 +21,10 @@ package com.cloud.utils.cisco.n1kv.vsm;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
-import com.trilead.ssh2.Connection;
-import com.trilead.ssh2.Session;
 
 import com.cloud.utils.Pair;
 import com.cloud.utils.cisco.n1kv.vsm.VsmCommand.BindingType;
@@ -34,6 +32,8 @@ import com.cloud.utils.cisco.n1kv.vsm.VsmCommand.PortProfileType;
 import com.cloud.utils.cisco.n1kv.vsm.VsmCommand.SwitchPortMode;
 import com.cloud.utils.exception.CloudRuntimeException;
 import com.cloud.utils.ssh.SSHCmdHelper;
+import com.trilead.ssh2.Connection;
+import com.trilead.ssh2.Session;
 
 public class NetconfHelper {
     private static final Logger s_logger = Logger.getLogger(NetconfHelper.class);
@@ -165,7 +165,7 @@ public class NetconfHelper {
         }
     }
 
-    public void addVServiceNode(String vlanId, String ipAddr) throws CloudRuntimeException {
+    public void addVServiceNode(String vlanId, InetAddress ipAddr) throws CloudRuntimeException {
         String command = VsmCommand.getVServiceNode(vlanId, ipAddr);
         if (command != null) {
             command = command.concat(SSH_NETCONF_TERMINATOR);

@@ -21,3 +21,12 @@
 
 DELETE FROM `cloud`.`configuration` where name='router.reboot.when.outofband.migrated';
 
+-- MAC ADDRESS CHANGES CLOUDSTACK-8764
+ALTER TABLE `cloud`.`data_center` DROP `mac_address`;
+ALTER TABLE `cloud`.`op_dc_ip_address_alloc` DROP `mac_address`;
+ALTER TABLE `cloud`.`op_dc_storage_network_ip_address` DROP `mac_address`;
+ALTER TABLE `cloud`.`op_networks` DROP `mac_address_seq`;
+ALTER TABLE `cloud`.`private_ip_address` DROP `mac_address`;
+ALTER TABLE `cloud`.`user_ip_address` DROP `mac_address`;
+ALTER TABLE `cloud`.`user_ipv6_address` DROP `mac_address`;
+ALTER TABLE `cloud`.`vm_instance` DROP `private_mac_address`;

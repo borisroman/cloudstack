@@ -1642,12 +1642,8 @@ public class VpcManagerImpl extends ManagerBase implements VpcManager, VpcProvis
                                     _entityMgr.findById(DataCenter.class, dcId).getName());
                         }
 
-                        final Long mac = dc.getMacAddress();
-                        final Long nextMac = mac + 1;
-                        dc.setMacAddress(nextMac);
-
-                        s_logger.info("creating private ip adress for vpc (" + ipAddress + ", " + privateNtwk.getId() + ", " + nextMac + ", " + vpcId + ", " + isSourceNat + ")");
-                        privateIp = new PrivateIpVO(ipAddress, privateNtwk.getId(), nextMac, vpcId, isSourceNat);
+                        s_logger.info("creating private ip adress for vpc (" + ipAddress + ", " + privateNtwk.getId() + ", " + vpcId + ", " + isSourceNat + ")");
+                        privateIp = new PrivateIpVO(ipAddress, privateNtwk.getId(), vpcId, isSourceNat);
                         _privateIpDao.persist(privateIp);
 
                         _dcDao.update(dc.getId(), dc);

@@ -103,9 +103,6 @@ public class VMInstanceVO implements VirtualMachine, FiniteStateObject<State, Vi
     @Column(name = "pod_id", updatable = true, nullable = false)
     protected Long podIdToDeployIn;
 
-    @Column(name = "private_mac_address", updatable = true, nullable = true)
-    protected String privateMacAddress;
-
     @Column(name = "data_center_id", updatable = true, nullable = false)
     protected long dataCenterId;
 
@@ -429,21 +426,12 @@ public class VMInstanceVO implements VirtualMachine, FiniteStateObject<State, Vi
     }
 
     @Override
-    public String getPrivateMacAddress() {
-        return privateMacAddress;
-    }
-
-    @Override
     public Long getPodIdToDeployIn() {
         return podIdToDeployIn;
     }
 
     public void setPodIdToDeployIn(Long podId) {
         this.podIdToDeployIn = podId;
-    }
-
-    public void setPrivateMacAddress(String privateMacAddress) {
-        this.privateMacAddress = privateMacAddress;
     }
 
     public void setDataCenterId(long dataCenterId) {

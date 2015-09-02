@@ -112,7 +112,6 @@ public class MidoNetPublicNetworkGuru extends PublicNetworkGuru {
             //nic.setBroadcastType(Networks.BroadcastDomainType.Vlan);
             nic.setFormat(Networks.AddressFormat.Ip4);
             nic.setReservationId(String.valueOf(ip.getVlanTag()));
-            nic.setMacAddress(ip.getMacAddress());
         }
 
         nic.setIPv4Dns1(dc.getDns1());

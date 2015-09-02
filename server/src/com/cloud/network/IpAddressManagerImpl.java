@@ -1876,7 +1876,6 @@ public class IpAddressManagerImpl extends ManagerBase implements IpAddressManage
                             nic.setBroadcastUri(BroadcastDomainType.Vlan.toUri(ip.getVlanTag()));
                 nic.setFormat(AddressFormat.Ip4);
                 nic.setReservationId(String.valueOf(ip.getVlanTag()));
-                nic.setMacAddress(ip.getMacAddress());
             }
             nic.setIPv4Dns1(dc.getDns1());
             nic.setIPv4Dns2(dc.getDns2());
@@ -1898,7 +1897,6 @@ public class IpAddressManagerImpl extends ManagerBase implements IpAddressManage
                     nic.setBroadcastUri(BroadcastDomainType.Vlan.toUri(vlan.getVlanTag()));
                     nic.setFormat(AddressFormat.Ip6);
                     nic.setReservationId(String.valueOf(vlan.getVlanTag()));
-                    nic.setMacAddress(ip.getMacAddress());
                 }
             }
             nic.setIPv6Dns1(dc.getIp6Dns1());
@@ -1972,7 +1970,6 @@ public class IpAddressManagerImpl extends ManagerBase implements IpAddressManage
                             nic.setBroadcastUri(BroadcastDomainType.Vlan.toUri(vlan.getVlanTag()));
                             nic.setFormat(AddressFormat.Ip6);
                             nic.setReservationId(String.valueOf(vlan.getVlanTag()));
-                            nic.setMacAddress(ip.getMacAddress());
                         }
                     }
                     nic.setIPv6Dns1(dc.getIp6Dns1());

@@ -1162,7 +1162,6 @@ public class ConsoleProxyManagerImpl extends ManagerBase implements ConsoleProxy
             proxy.setPublicIpAddress(null);
             proxy.setPublicMacAddress(null);
             proxy.setPublicNetmask(null);
-            proxy.setPrivateMacAddress(null);
             proxy.setPrivateIpAddress(null);
             _consoleProxyDao.update(proxy.getId(), proxy);
             _consoleProxyDao.remove(vmId);
@@ -1384,10 +1383,8 @@ public class ConsoleProxyManagerImpl extends ManagerBase implements ConsoleProxy
                 (nic.getTrafficType() == TrafficType.Guest && (dc.getNetworkType() == NetworkType.Basic || dc.isSecurityGroupEnabled()))) {
                 proxy.setPublicIpAddress(nic.getIPv4Address());
                 proxy.setPublicNetmask(nic.getIPv4Netmask());
-                proxy.setPublicMacAddress(nic.getMacAddress());
             } else if (nic.getTrafficType() == TrafficType.Management) {
                 proxy.setPrivateIpAddress(nic.getIPv4Address());
-                proxy.setPrivateMacAddress(nic.getMacAddress());
             }
         }
         _consoleProxyDao.update(proxy.getId(), proxy);
@@ -1460,9 +1457,7 @@ public class ConsoleProxyManagerImpl extends ManagerBase implements ConsoleProxy
     public void finalizeExpunge(VirtualMachine vm) {
         ConsoleProxyVO proxy = _consoleProxyDao.findById(vm.getId());
         proxy.setPublicIpAddress(null);
-        proxy.setPublicMacAddress(null);
         proxy.setPublicNetmask(null);
-        proxy.setPrivateMacAddress(null);
         proxy.setPrivateIpAddress(null);
         _consoleProxyDao.update(proxy.getId(), proxy);
     }

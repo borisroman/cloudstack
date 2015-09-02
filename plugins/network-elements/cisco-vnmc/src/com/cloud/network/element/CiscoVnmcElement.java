@@ -249,7 +249,7 @@ public class CiscoVnmcElement extends AdapterBase implements SourceNatServicePro
         boolean add = (sourceNatIp.getState() == IpAddress.State.Releasing ? false : true);
         IpAddressTO ip =
             new IpAddressTO(sourceNatIp.getAccountId(), sourceNatIp.getAddress().addr(), add, false, sourceNatIp.isSourceNat(), sourceNatIp.getVlanTag(),
-                sourceNatIp.getGateway(), sourceNatIp.getNetmask(), sourceNatIp.getMacAddress(), null, sourceNatIp.isOneToOneNat());
+                sourceNatIp.getGateway(), sourceNatIp.getNetmask(), null, sourceNatIp.isOneToOneNat());
         boolean addSourceNat = false;
         if (sourceNatIp.isSourceNat()) {
             addSourceNat = add;

@@ -632,7 +632,6 @@ public class NetworkHelperImpl implements NetworkHelper {
             defaultNic.setIPv4Address(sourceNatIp.getAddress().addr());
             defaultNic.setIPv4Gateway(sourceNatIp.getGateway());
             defaultNic.setIPv4Netmask(sourceNatIp.getNetmask());
-            defaultNic.setMacAddress(sourceNatIp.getMacAddress());
             // get broadcast from public network
             final Network pubNet = _networkDao.findById(sourceNatIp.getNetworkId());
             if (pubNet.getBroadcastDomainType() == BroadcastDomainType.Vxlan) {

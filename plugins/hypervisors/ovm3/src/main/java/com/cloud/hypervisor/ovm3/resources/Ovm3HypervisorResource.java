@@ -17,6 +17,7 @@
 
 package com.cloud.hypervisor.ovm3.resources;
 
+import java.net.Inet4Address;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,14 +27,13 @@ import javax.ejb.Local;
 import javax.inject.Inject;
 import javax.naming.ConfigurationException;
 
-import org.apache.log4j.Logger;
-
 import org.apache.cloudstack.storage.command.AttachCommand;
 import org.apache.cloudstack.storage.command.CopyCommand;
 import org.apache.cloudstack.storage.command.CreateObjectCommand;
 import org.apache.cloudstack.storage.command.DeleteCommand;
 import org.apache.cloudstack.storage.command.DettachCommand;
 import org.apache.cloudstack.storage.command.StorageSubSystemCommand;
+import org.apache.log4j.Logger;
 
 import com.cloud.agent.IAgentControl;
 import com.cloud.agent.api.Answer;
@@ -459,10 +459,10 @@ public class Ovm3HypervisorResource extends ServerResourceBase implements
             state = State.Running;
 
             if (vmSpec.getType() != VirtualMachine.Type.User) {
-                String controlIp = null;
+                Inet4Address controlIp = null;
                 for (NicTO nic : vmSpec.getNics()) {
-                    if (nic.getType() == TrafficType.Control) {
-                        controlIp = nic.getIp();
+                    if (nic.getNetwork().getType() == TrafficType.Control) {
+                        controlIp = nic.getIPv4Addresses().get(0).getIPv4Address();
                     }
                 }
                 /* fix is in cloudstack.py for xend restart timer */
@@ -479,7 +479,7 @@ public class Ovm3HypervisorResource extends ServerResourceBase implements
                     }
                     /* creative fix? */
                     try {
-                        Boolean res = cSp.domrCheckSsh(controlIp);
+                        Boolean res = cSp.domrCheckSsh(controlIp.getHostAddress());
                         LOGGER.debug("connected to " + controlIp
                                 + " on attempt " + count + " result: " + res);
                         if (res) {

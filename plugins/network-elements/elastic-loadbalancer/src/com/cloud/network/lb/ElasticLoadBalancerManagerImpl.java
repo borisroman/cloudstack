@@ -499,10 +499,8 @@ public class ElasticLoadBalancerManagerImpl extends ManagerBase implements Elast
             if (nic.getTrafficType() == TrafficType.Public) {
                 elbVm.setPublicIpAddress(nic.getIPv4Address());
                 elbVm.setPublicNetmask(nic.getIPv4Netmask());
-                elbVm.setPublicMacAddress(nic.getMacAddress());
             } else if (nic.getTrafficType() == TrafficType.Control) {
                 elbVm.setPrivateIpAddress(nic.getIPv4Address());
-                elbVm.setPrivateMacAddress(nic.getMacAddress());
             }
         }
         _routerDao.update(elbVm.getId(), elbVm);

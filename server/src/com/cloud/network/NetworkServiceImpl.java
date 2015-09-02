@@ -4003,8 +4003,6 @@ public class NetworkServiceImpl extends ManagerBase implements  NetworkService {
             return Transaction.execute(new TransactionCallbackWithException<Network, Exception>() {
                 @Override
                 public Network doInTransaction(TransactionStatus status) throws ResourceAllocationException, InsufficientCapacityException {
-                    //lock datacenter as we need to get mac address seq from there
-                    DataCenterVO dc = _dcDao.lockRow(pNtwk.getDataCenterId(), true);
 
                     //check if we need to create guest network
                     Network privateNetwork = _networksDao.getPrivateNetwork(uriString, cidr, networkOwnerId, pNtwk.getDataCenterId(), networkOfferingId);
@@ -4032,12 +4030,8 @@ public class NetworkServiceImpl extends ManagerBase implements  NetworkService {
                             throw new InvalidParameterValueException("Private ip address " + startIp + " already used for private gateway" + " in zone "
                                     + _entityMgr.findById(DataCenter.class, pNtwk.getDataCenterId()).getName());
                         }
-                        Long mac = dc.getMacAddress();
-                        Long nextMac = mac + 1;
-                        dc.setMacAddress(nextMac);
-                        privateIp = new PrivateIpVO(startIp, privateNetwork.getId(), nextMac, vpcId, sourceNat);
+                        privateIp = new PrivateIpVO(startIp, privateNetwork.getId(), vpcId, sourceNat);
                         _privateIpDao.persist(privateIp);
-                        _dcDao.update(dc.getId(), dc);
                     }
 
                     s_logger.debug("Private network " + privateNetwork + " is created");

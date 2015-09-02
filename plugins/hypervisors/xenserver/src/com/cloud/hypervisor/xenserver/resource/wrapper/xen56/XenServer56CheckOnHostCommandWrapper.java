@@ -35,7 +35,7 @@ public final class XenServer56CheckOnHostCommandWrapper extends CommandWrapper<C
 
     @Override
     public Answer execute(final CheckOnHostCommand command, final XenServer56Resource xenServer56) {
-        final Boolean alive = xenServer56.checkHeartbeat(command.getHost().getGuid());
+        final Boolean alive = xenServer56.checkHeartbeat(command.getHost().getUuid());
         String msg = "";
         if (alive == null) {
             msg = " cannot determine ";

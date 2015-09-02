@@ -16,6 +16,7 @@
 // under the License.
 package com.cloud.hypervisor.kvm.resource;
 
+import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -28,12 +29,12 @@ import com.cloud.utils.script.Script;
 public class KVMHAChecker extends KVMHABase implements Callable<Boolean> {
     private static final Logger s_logger = Logger.getLogger(KVMHAChecker.class);
     private List<NfsStoragePool> _pools;
-    private String _hostIP;
+    private Inet4Address _hostIPv4;
     private long _heartBeatCheckerTimeout = 360000; /* 6 minutes */
 
-    public KVMHAChecker(List<NfsStoragePool> pools, String host) {
+    public KVMHAChecker(List<NfsStoragePool> pools, Inet4Address hostIPv4) {
         this._pools = pools;
-        this._hostIP = host;
+        this._hostIPv4 = hostIPv4;
     }
 
     /*
@@ -48,7 +49,7 @@ public class KVMHAChecker extends KVMHABase implements Callable<Boolean> {
             cmd.add("-i", pool._poolIp);
             cmd.add("-p", pool._poolMountSourcePath);
             cmd.add("-m", pool._mountDestPath);
-            cmd.add("-h", _hostIP);
+            cmd.add("-h", _hostIPv4.getHostAddress());
             cmd.add("-r");
             cmd.add("-t", String.valueOf(_heartBeatUpdateFreq / 1000));
             OutputInterpreter.OneLineParser parser = new OutputInterpreter.OneLineParser();

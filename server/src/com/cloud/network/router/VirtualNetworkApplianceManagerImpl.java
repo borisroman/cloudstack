@@ -1653,10 +1653,8 @@ Configurable, StateListener<State, VirtualMachine.Event, VirtualMachine> {
             if (nic.getTrafficType() == TrafficType.Public) {
                 router.setPublicIpAddress(nic.getIPv4Address());
                 router.setPublicNetmask(nic.getIPv4Netmask());
-                router.setPublicMacAddress(nic.getMacAddress());
             } else if (nic.getTrafficType() == TrafficType.Control) {
                 router.setPrivateIpAddress(nic.getIPv4Address());
-                router.setPrivateMacAddress(nic.getMacAddress());
             }
         }
         _routerDao.update(router.getId(), router);

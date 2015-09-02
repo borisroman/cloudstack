@@ -28,7 +28,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 
 import com.cloud.network.Network.Provider;
@@ -105,10 +104,6 @@ public class DataCenterVO implements DataCenter {
 
     @Column(name = "firewall_provider")
     private String firewallProvider;
-
-    @Column(name = "mac_address", nullable = false)
-    @TableGenerator(name = "mac_address_sq", table = "data_center", pkColumnName = "id", valueColumnName = "mac_address", allocationSize = 1)
-    private long macAddress = 1;
 
     @Column(name = "zone_token")
     private String zoneToken;
@@ -427,14 +422,6 @@ public class DataCenterVO implements DataCenter {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
-    }
-
-    public long getMacAddress() {
-        return macAddress;
-    }
-
-    public void setMacAddress(long macAddress) {
-        this.macAddress = macAddress;
     }
 
     @Override

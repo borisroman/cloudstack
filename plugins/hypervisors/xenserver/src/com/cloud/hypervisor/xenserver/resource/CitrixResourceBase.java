@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -593,7 +594,7 @@ public abstract class CitrixResourceBase implements ServerResource, HypervisorRe
                 final VM router = getVM(conn, routerName);
 
                 final NicTO nic = new NicTO();
-                nic.setMac(ip.getVifMacAddress());
+                //nic.setMac(ip.getVifMacAddress());
                 nic.setType(ip.getTrafficType());
                 if (ip.getBroadcastUri() == null) {
                     nic.setBroadcastType(BroadcastDomainType.Native);
@@ -2787,7 +2788,7 @@ public abstract class CitrixResourceBase implements ServerResource, HypervisorRe
         return earliestNetwork != null ? new XsLocalNetwork(this, earliestNetwork, earliestNetworkRecord, null, null) : null;
     }
 
-    public long[] getNetworkStats(final Connection conn, final String privateIP) {
+    public long[] getNetworkStats(final Connection conn, final InetAddress privateIP) {
         final String result = networkUsage(conn, privateIP, "get", null);
         final long[] stats = new long[2];
         if (result != null) {
@@ -3754,7 +3755,7 @@ public abstract class CitrixResourceBase implements ServerResource, HypervisorRe
         }
     }
 
-    public String networkUsage(final Connection conn, final String privateIpAddress, final String option, final String vif) {
+    public String networkUsage(final Connection conn, final InetAddress privateIpAddress, final String option, final String vif) {
         if (option.equals("get")) {
             return "0:0";
         }
@@ -4057,7 +4058,7 @@ public abstract class CitrixResourceBase implements ServerResource, HypervisorRe
                 final VM router = getVM(conn, routerName);
 
                 final NicTO nic = new NicTO();
-                nic.setMac(ip.getVifMacAddress());
+                //nic.setMac(ip.getVifMacAddress());
                 nic.setType(ip.getTrafficType());
                 if (ip.getBroadcastUri() == null) {
                     nic.setBroadcastType(BroadcastDomainType.Native);

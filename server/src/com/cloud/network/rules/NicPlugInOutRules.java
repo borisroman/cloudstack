@@ -103,7 +103,6 @@ public class NicPlugInOutRules extends RuleApplier {
             defaultNic.setIPv4Address(ip.getAddress().addr());
             defaultNic.setIPv4Gateway(ip.getGateway());
             defaultNic.setIPv4Netmask(ip.getNetmask());
-            defaultNic.setMacAddress(ip.getMacAddress());
             defaultNic.setBroadcastType(BroadcastDomainType.Vlan);
             defaultNic.setBroadcastUri(BroadcastDomainType.Vlan.toUri(ip.getVlanTag()));
             defaultNic.setIsolationUri(IsolationType.Vlan.toUri(ip.getVlanTag()));

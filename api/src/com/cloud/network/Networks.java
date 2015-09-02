@@ -23,7 +23,6 @@ import com.cloud.utils.exception.CloudRuntimeException;
 
 /**
  * Network includes all of the enums used within networking.
- *
  */
 public class Networks {
 
@@ -42,7 +41,11 @@ public class Networks {
     };
 
     public enum AddressFormat {
-        Ip4, Ip6, DualStack
+        IPv4, IPv6, DualStack
+    }
+
+    public enum GuestType {
+        Shared, Isolated
     }
 
     /**

@@ -47,6 +47,4 @@ public interface UserIpv6Address extends ControlledEntity, Identity, InternalIde
     Long getPhysicalNetworkId();
 
     void setState(UserIpv6Address.State state);
-
-    String getMacAddress();
 }

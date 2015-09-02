@@ -21,12 +21,7 @@ import org.apache.cloudstack.api.InternalIdentity;
 
 import com.cloud.dc.Vlan;
 
-/**
- */
 public interface PublicIpAddress extends ControlledEntity, IpAddress, Vlan, InternalIdentity {
-
-    String getMacAddress();
-
     public String getNetmask();
 
     public String getGateway();

@@ -79,9 +79,6 @@ public class IPAddressVO implements IpAddress {
     @Column(name = "state")
     private State state;
 
-    @Column(name = "mac_address")
-    private long macAddress;
-
     @Column(name = "source_network_id")
     private Long sourceNetworkId;
 
@@ -132,7 +129,7 @@ public class IPAddressVO implements IpAddress {
         return state == State.Allocated;
     }
 
-    public IPAddressVO(Ip address, long dataCenterId, long macAddress, long vlanDbId, boolean sourceNat) {
+    public IPAddressVO(Ip address, long dataCenterId, long vlanDbId, boolean sourceNat) {
         this.address = address;
         this.dataCenterId = dataCenterId;
         vlanId = vlanDbId;
@@ -141,7 +138,6 @@ public class IPAddressVO implements IpAddress {
         allocatedToAccountId = null;
         allocatedTime = null;
         state = State.Free;
-        this.macAddress = macAddress;
         uuid = UUID.randomUUID().toString();
     }
 
@@ -155,10 +151,6 @@ public class IPAddressVO implements IpAddress {
         vlanId = vlanDbId;
         this.portable = portable;
         uuid = UUID.randomUUID().toString();
-    }
-
-    public long getMacAddress() {
-        return macAddress;
     }
 
     @Override

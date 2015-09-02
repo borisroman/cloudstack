@@ -38,11 +38,6 @@ public interface PrivateIp {
      */
     String getNetmask();
 
-    /**
-     * @return
-     */
-    String getMacAddress();
-
     long getNetworkId();
 
     boolean getSourceNat();

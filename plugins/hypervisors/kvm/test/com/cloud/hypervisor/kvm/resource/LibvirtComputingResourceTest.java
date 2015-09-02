@@ -32,8 +32,11 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -861,7 +864,8 @@ public class LibvirtComputingResourceTest {
         final LibvirtUtilitiesHelper libvirtUtilitiesHelper = Mockito.mock(LibvirtUtilitiesHelper.class);
 
         final String vmName = "Test";
-        final RebootRouterCommand command = new RebootRouterCommand(vmName, "127.0.0.1");
+        InetAddress privateIP = InetAddress.getLoopbackAddress();
+        final RebootRouterCommand command = new RebootRouterCommand(vmName, privateIP);
 
         when(libvirtComputingResource.getVirtRouterResource()).thenReturn(routingResource);
         when(libvirtComputingResource.getLibvirtUtilitiesHelper()).thenReturn(libvirtUtilitiesHelper);
@@ -894,7 +898,15 @@ public class LibvirtComputingResourceTest {
         final LibvirtUtilitiesHelper libvirtUtilitiesHelper = Mockito.mock(LibvirtUtilitiesHelper.class);
 
         final String vmName = "Test";
-        final RebootRouterCommand command = new RebootRouterCommand(vmName, "127.0.0.1");
+        InetAddress privateIP = null;
+        try {
+            privateIP = InetAddress.getByName("127.0.0.1");
+        } catch (UnknownHostException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+            fail();
+        }
+        final RebootRouterCommand command = new RebootRouterCommand(vmName, privateIP);
 
         when(libvirtComputingResource.getVirtRouterResource()).thenReturn(routingResource);
         when(libvirtComputingResource.getLibvirtUtilitiesHelper()).thenReturn(libvirtUtilitiesHelper);
@@ -985,10 +997,10 @@ public class LibvirtComputingResourceTest {
         when(vm.getNics()).thenReturn(new NicTO[]{nicTO});
         when(vm.getDisks()).thenReturn(new DiskTO[]{diskTO});
 
-        when(nicTO.getType()).thenReturn(TrafficType.Guest);
+        when(nicTO.getNetwork().getType()).thenReturn(TrafficType.Guest);
         when(diskTO.getType()).thenReturn(Volume.Type.ISO);
 
-        when(libvirtComputingResource.getVifDriver(nicTO.getType())).thenReturn(vifDriver);
+        when(libvirtComputingResource.getVifDriver(nicTO.getNetwork().getType())).thenReturn(vifDriver);
         when(libvirtComputingResource.getStoragePoolMgr()).thenReturn(storagePoolManager);
 
         final LibvirtRequestWrapper wrapper = LibvirtRequestWrapper.getInstance();
@@ -1033,10 +1045,10 @@ public class LibvirtComputingResourceTest {
         when(vm.getNics()).thenReturn(new NicTO[]{nicTO});
         when(vm.getDisks()).thenReturn(new DiskTO[]{diskTO});
 
-        when(nicTO.getType()).thenReturn(TrafficType.Guest);
+        when(nicTO.getNetwork().getType()).thenReturn(TrafficType.Guest);
         when(diskTO.getType()).thenReturn(Volume.Type.ISO);
 
-        when(libvirtComputingResource.getVifDriver(nicTO.getType())).thenReturn(vifDriver);
+        when(libvirtComputingResource.getVifDriver(nicTO.getNetwork().getType())).thenReturn(vifDriver);
         when(libvirtComputingResource.getStoragePoolMgr()).thenReturn(storagePoolManager);
         when(storagePoolManager.connectPhysicalDisksViaVmSpec(vm)).thenReturn(true);
 
@@ -1079,9 +1091,9 @@ public class LibvirtComputingResourceTest {
         }
 
         when(vm.getNics()).thenReturn(new NicTO[]{nicTO});
-        when(nicTO.getType()).thenReturn(TrafficType.Guest);
+        when(nicTO.getNetwork().getType()).thenReturn(TrafficType.Guest);
 
-        when(libvirtComputingResource.getVifDriver(nicTO.getType())).thenReturn(vifDriver);
+        when(libvirtComputingResource.getVifDriver(nicTO.getNetwork().getType())).thenReturn(vifDriver);
         when(libvirtComputingResource.getStoragePoolMgr()).thenReturn(storagePoolManager);
 
         final LibvirtRequestWrapper wrapper = LibvirtRequestWrapper.getInstance();
@@ -1125,10 +1137,10 @@ public class LibvirtComputingResourceTest {
         when(vm.getNics()).thenReturn(new NicTO[]{nicTO});
         when(vm.getDisks()).thenReturn(new DiskTO[]{volume});
 
-        when(nicTO.getType()).thenReturn(TrafficType.Guest);
+        when(nicTO.getNetwork().getType()).thenReturn(TrafficType.Guest);
         when(volume.getType()).thenReturn(Volume.Type.ISO);
 
-        when(libvirtComputingResource.getVifDriver(nicTO.getType())).thenReturn(vifDriver);
+        when(libvirtComputingResource.getVifDriver(nicTO.getNetwork().getType())).thenReturn(vifDriver);
         when(libvirtComputingResource.getStoragePoolMgr()).thenReturn(storagePoolManager);
         try {
             when(libvirtComputingResource.getVolumePath(conn, volume)).thenThrow(URISyntaxException.class);
@@ -1178,9 +1190,9 @@ public class LibvirtComputingResourceTest {
         }
 
         when(vm.getNics()).thenReturn(new NicTO[]{nicTO});
-        when(nicTO.getType()).thenReturn(TrafficType.Guest);
+        when(nicTO.getNetwork().getType()).thenReturn(TrafficType.Guest);
 
-        when(libvirtComputingResource.getVifDriver(nicTO.getType())).thenThrow(InternalErrorException.class);
+        when(libvirtComputingResource.getVifDriver(nicTO.getNetwork().getType())).thenThrow(InternalErrorException.class);
         when(libvirtComputingResource.getStoragePoolMgr()).thenReturn(storagePoolManager);
         try {
             when(libvirtComputingResource.getVolumePath(conn, volume)).thenReturn("/path");
@@ -2581,14 +2593,14 @@ public class LibvirtComputingResourceTest {
     @Test
     public void testCheckSshCommand() {
         final String instanceName = "Test";
-        final String ip = "127.0.0.1";
+        final InetAddress ip = InetAddress.getLoopbackAddress();
         final int port = 22;
 
         final CheckSshCommand command = new CheckSshCommand(instanceName, ip, port);
 
         final VirtualRoutingResource virtRouterResource = Mockito.mock(VirtualRoutingResource.class);
 
-        final String privateIp = command.getIp();
+        final InetAddress privateIp = command.getIp();
         final int cmdPort = command.getPort();
 
         when(libvirtComputingResource.getVirtRouterResource()).thenReturn(virtRouterResource);
@@ -2607,14 +2619,14 @@ public class LibvirtComputingResourceTest {
     @Test
     public void testCheckSshCommandFailure() {
         final String instanceName = "Test";
-        final String ip = "127.0.0.1";
+        final InetAddress ip = InetAddress.getLoopbackAddress();
         final int port = 22;
 
         final CheckSshCommand command = new CheckSshCommand(instanceName, ip, port);
 
         final VirtualRoutingResource virtRouterResource = Mockito.mock(VirtualRoutingResource.class);
 
-        final String privateIp = command.getIp();
+        final InetAddress privateIp = command.getIp();
         final int cmdPort = command.getPort();
 
         when(libvirtComputingResource.getVirtRouterResource()).thenReturn(virtRouterResource);
@@ -3234,7 +3246,7 @@ public class LibvirtComputingResourceTest {
             when(libvirtUtilitiesHelper.getConnectionByVmName(command.getVmName())).thenReturn(conn);
             when(libvirtComputingResource.getDomain(conn, instanceName)).thenReturn(vm);
 
-            when(libvirtComputingResource.getVifDriver(nic.getType())).thenReturn(vifDriver);
+            when(libvirtComputingResource.getVifDriver(nic.getNetwork().getType())).thenReturn(vifDriver);
 
             when(vifDriver.plug(nic, "Other PV", "")).thenReturn(interfaceDef);
             when(interfaceDef.toString()).thenReturn("Interface");
@@ -3258,7 +3270,7 @@ public class LibvirtComputingResourceTest {
         try {
             verify(libvirtUtilitiesHelper, times(1)).getConnectionByVmName(command.getVmName());
             verify(libvirtComputingResource, times(1)).getDomain(conn, instanceName);
-            verify(libvirtComputingResource, times(1)).getVifDriver(nic.getType());
+            verify(libvirtComputingResource, times(1)).getVifDriver(nic.getNetwork().getType());
             verify(vifDriver, times(1)).plug(nic, "Other PV", "");
         } catch (final LibvirtException e) {
             fail(e.getMessage());
@@ -3331,7 +3343,7 @@ public class LibvirtComputingResourceTest {
             when(libvirtUtilitiesHelper.getConnectionByVmName(command.getVmName())).thenReturn(conn);
             when(libvirtComputingResource.getDomain(conn, instanceName)).thenReturn(vm);
 
-            when(libvirtComputingResource.getVifDriver(nic.getType())).thenReturn(vifDriver);
+            when(libvirtComputingResource.getVifDriver(nic.getNetwork().getType())).thenReturn(vifDriver);
 
             when(vifDriver.plug(nic, "Other PV", "")).thenThrow(InternalErrorException.class);
 
@@ -3351,7 +3363,7 @@ public class LibvirtComputingResourceTest {
         try {
             verify(libvirtUtilitiesHelper, times(1)).getConnectionByVmName(command.getVmName());
             verify(libvirtComputingResource, times(1)).getDomain(conn, instanceName);
-            verify(libvirtComputingResource, times(1)).getVifDriver(nic.getType());
+            verify(libvirtComputingResource, times(1)).getVifDriver(nic.getNetwork().getType());
             verify(vifDriver, times(1)).plug(nic, "Other PV", "");
         } catch (final LibvirtException e) {
             fail(e.getMessage());
@@ -4943,7 +4955,7 @@ public class LibvirtComputingResourceTest {
         final NicTO[] nics = new NicTO[]{nic};
 
         final String vmName = "Test";
-        final String controlIp = "127.0.0.1";
+        Inet4Address controlIp = (Inet4Address)InetAddress.getLoopbackAddress();
 
         when(libvirtComputingResource.getStoragePoolMgr()).thenReturn(storagePoolMgr);
         when(vmSpec.getNics()).thenReturn(nics);
@@ -4972,8 +4984,8 @@ public class LibvirtComputingResourceTest {
             when(vmSpec.getBootArgs()).thenReturn("ls -lart");
             when(libvirtComputingResource.passCmdLine(vmName, vmSpec.getBootArgs())).thenReturn(true);
 
-            when(nic.getIp()).thenReturn(controlIp);
-            when(nic.getType()).thenReturn(TrafficType.Control);
+            when(nic.getIPv4Addresses().get(0).getIPv4Address()).thenReturn(controlIp);
+            when(nic.getNetwork().getType()).thenReturn(TrafficType.Control);
             when(libvirtComputingResource.getVirtRouterResource()).thenReturn(virtRouterResource);
             when(virtRouterResource.connect(controlIp, 1, 5000)).thenReturn(true);
         } catch (final InternalErrorException e) {
@@ -5015,7 +5027,7 @@ public class LibvirtComputingResourceTest {
         final NicTO[] nics = new NicTO[]{nic};
 
         final String vmName = "Test";
-        final String controlIp = "127.0.0.1";
+        Inet4Address controlIp = (Inet4Address)InetAddress.getLoopbackAddress();
 
         when(libvirtComputingResource.getStoragePoolMgr()).thenReturn(storagePoolMgr);
         when(vmSpec.getNics()).thenReturn(nics);
@@ -5041,15 +5053,15 @@ public class LibvirtComputingResourceTest {
 
             when(libvirtComputingResource.startVM(conn, vmName, vmDef.toString())).thenReturn("SUCCESS");
 
-            when(nic.isSecurityGroupEnabled()).thenReturn(true);
-            when(nic.getIsolationUri()).thenReturn(new URI("ec2://test"));
+            when(nic.getNetwork().isSecurityGroupEnabled()).thenReturn(true);
+            when(nic.getNetwork().getIsolationUri()).thenReturn(new URI("ec2://test"));
 
 
             when(vmSpec.getBootArgs()).thenReturn("ls -lart");
             when(libvirtComputingResource.passCmdLine(vmName, vmSpec.getBootArgs())).thenReturn(true);
 
-            when(nic.getIp()).thenReturn(controlIp);
-            when(nic.getType()).thenReturn(TrafficType.Control);
+            when(nic.getIPv4Addresses().get(0).getIPv4Address()).thenReturn(controlIp);
+            when(nic.getNetwork().getType()).thenReturn(TrafficType.Control);
             when(libvirtComputingResource.getVirtRouterResource()).thenReturn(virtRouterResource);
             when(virtRouterResource.connect(controlIp, 1, 5000)).thenReturn(true);
         } catch (final InternalErrorException e) {

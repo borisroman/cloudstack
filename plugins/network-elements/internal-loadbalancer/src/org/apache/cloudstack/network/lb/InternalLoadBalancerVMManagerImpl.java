@@ -252,7 +252,6 @@ public class InternalLoadBalancerVMManagerImpl extends ManagerBase implements In
         for (final NicProfile nic : nics) {
             if (nic.getTrafficType() == TrafficType.Control) {
                 internalLbVm.setPrivateIpAddress(nic.getIPv4Address());
-                internalLbVm.setPrivateMacAddress(nic.getMacAddress());
             }
         }
         _internalLbVmDao.update(internalLbVm.getId(), internalLbVm);

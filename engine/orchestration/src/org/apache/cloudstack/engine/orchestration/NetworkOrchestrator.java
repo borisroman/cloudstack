@@ -816,7 +816,7 @@ public class NetworkOrchestrator extends ManagerBase implements NetworkOrchestra
 
         deviceId = applyProfileToNic(vo, profile, deviceId);
 
-        vo = _nicDao.persist(vo);
+        vo = generateMac(vo);
 
         Integer networkRate = _networkModel.getNetworkRate(network.getId(), vm.getId());
         NicProfile vmNic = new NicProfile(vo, network, vo.getBroadcastUri(), vo.getIsolationUri(), networkRate, _networkModel.isSecurityGroupSupportedInNetwork(network),
@@ -1480,7 +1480,6 @@ public class NetworkOrchestrator extends ManagerBase implements NetworkOrchestra
                     profile.setIPv4Address(userIp.getAddress().toString());
                     profile.setIPv4Netmask(publicIp.getNetmask());
                     profile.setIPv4Gateway(publicIp.getGateway());
-                    profile.setMacAddress(publicIp.getMacAddress());
                     profile.setBroadcastType(network.getBroadcastDomainType());
                     profile.setTrafficType(network.getTrafficType());
                     profile.setBroadcastUri(broadcastUri);
@@ -1533,7 +1532,7 @@ public class NetworkOrchestrator extends ManagerBase implements NetworkOrchestra
             // update the reservation id
             NicVO nicVo = _nicDao.findById(nicDst.getId());
             nicVo.setReservationId(nicDst.getReservationId());
-            _nicDao.persist(nicVo);
+            generateMac(nicVo);
         }
     }
 
@@ -3320,7 +3319,25 @@ public class NetworkOrchestrator extends ManagerBase implements NetworkOrchestra
         nic.setReservationStrategy(ReservationStrategy.PlaceHolder);
         nic.setState(Nic.State.Reserved);
         nic.setVmType(vmType);
-        return _nicDao.persist(nic);
+        return generateMac(nic);
+    }
+
+    public NicVO generateMac(NicVO nicVO) {
+        if (nicVO.getId() < 1) {
+            s_logger.trace("Nic had not been persisted before generateMac(NicVO nicVO) was called, nic: " + nicVO);
+            _nicDao.persist(nicVO);
+        }
+
+        if (nicVO.getMacAddress() == null) {
+            nicVO.setMacAddress(NetUtils.long2Mac(nicVO.getId()));
+
+            _nicDao.update(nicVO.getId(), nicVO);
+        }
+        else if (!nicVO.getMacAddress().equals(NetUtils.long2Mac(nicVO.getId()))) {
+            s_logger.debug("Nic id has changed after mac was generated. Keeping original mac, nic: " + nicVO);
+        }
+
+        return nicVO;
     }
 
     @Override
