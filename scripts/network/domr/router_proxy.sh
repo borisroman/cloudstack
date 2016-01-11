@@ -43,5 +43,11 @@ shift
 
 check_gw "$domRIp"
 
-ssh -p 3922 -q -o StrictHostKeyChecking=no -i $cert root@$domRIp "/opt/cloud/bin/$script $*"
+if [[ "$script" == *.py ]]
+then
+    ssh -p 3922 -q -o StrictHostKeyChecking=no -i $cert root@$domRIp "python -m cProfile -o /tmp/$(date +%s) /opt/cloud/bin/$script $*"
+else
+    ssh -p 3922 -q -o StrictHostKeyChecking=no -i $cert root@$domRIp "/opt/cloud/bin/$script $*"
+fi
+
 exit $?
