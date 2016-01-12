@@ -45,9 +45,9 @@ from cs.CsProcess import CsProcess
 
 
 class CsPassword(CsDataBag):
-    
+
     TOKEN_FILE="/tmp/passwdsrvrtoken"
-    
+
     def process(self):
         for item in self.dbag:
             if item == "id":
@@ -75,7 +75,7 @@ class CsPassword(CsDataBag):
 
 
 class CsStaticRoutes(CsDataBag):
-    
+
     def process(self):
         logging.debug("Processing CsStaticRoutes file ==> %s" % self.dbag)
         for item in self.dbag:
@@ -119,7 +119,7 @@ class CsAcl(CsDataBag):
 
             self.rule['allowed'] = True
             self.rule['action'] = "ACCEPT"
-                
+
             if self.rule['type'] == 'all' and not obj['source_cidr_list']:
                 self.rule['cidr'] = ['0.0.0.0/0']
             else:
@@ -896,79 +896,100 @@ class CsForwardingRules(CsDataBag):
 
 
 def main(argv):
+    processfile = argv[1]
     config = CsConfig()
     logging.basicConfig(filename=config.get_logger(),
                         level=config.get_level(),
                         format=config.get_format())
-    config.set_address()
 
-    logging.debug("Configuring ip addresses")
-    # IP configuration
-    config.address().compare()
-    config.address().process()
+    if processfile is None:
+        processfile = 'cmd_line.json'
+    if processfile == 'cmd_line.json' or processfile == 'guest_network.json' or processfile == 'ip_associations.json':
+        config.set_address()
 
-    logging.debug("Configuring vmpassword")
-    password = CsPassword("vmpassword", config)
-    password.process()
+    if processfile == 'cmd_line.json' or processfile == 'guest_network.json' or processfile == 'ip_associations.json':
+        logging.debug("Configuring ip addresses")
+        # IP configuration
+        config.address().compare()
+        config.address().process()
 
-    logging.debug("Configuring vmdata")
-    metadata = CsVmMetadata('vmdata', config)
-    metadata.process()
+    if processfile == 'cmd_line.json' or processfile == 'vm_password.json':
+        logging.debug("Configuring vmpassword")
+        password = CsPassword("vmpassword", config)
+        password.process()
 
-    logging.debug("Configuring networkacl")
-    acls = CsAcl('networkacl', config)
-    acls.process()
+    if processfile == 'cmd_line.json' or processfile == 'vm_metadata.json':
+        logging.debug("Configuring vmdata")
+        metadata = CsVmMetadata('vmdata', config)
+        metadata.process()
 
-    logging.debug("Configuring firewall rules")
-    acls = CsAcl('firewallrules', config)
-    acls.process()
+    if processfile == 'cmd_line.json' or processfile == 'network_acl.json':
+        logging.debug("Configuring networkacl")
+        acls = CsAcl('networkacl', config)
+        acls.process()
 
-    logging.debug("Configuring PF rules")
-    fwd = CsForwardingRules("forwardingrules", config)
-    fwd.process()
+    if processfile == 'cmd_line.json' or processfile == 'firewall_rules.json':
+        logging.debug("Configuring firewall rules")
+        acls = CsAcl('firewallrules', config)
+        acls.process()
 
-    logging.debug("Configuring s2s vpn")
-    vpns = CsSite2SiteVpn("site2sitevpn", config)
-    vpns.process()
+    if processfile == 'cmd_line.json' or processfile == 'forwarding_rules.json' or processfile == 'staticnat_rules.json':
+        logging.debug("Configuring PF rules")
+        fwd = CsForwardingRules("forwardingrules", config)
+        fwd.process()
 
-    logging.debug("Configuring remote access vpn")
-    #remote access vpn
-    rvpn = CsRemoteAccessVpn("remoteaccessvpn", config)
-    rvpn.process()
+    if processfile == 'cmd_line.json' or processfile == 'site_2_site_vpn.json':
+        logging.debug("Configuring s2s vpn")
+        vpns = CsSite2SiteVpn("site2sitevpn", config)
+        vpns.process()
 
-    logging.debug("Configuring vpn users list")
-    #remote access vpn users
-    vpnuser = CsVpnUser("vpnuserlist", config)
-    vpnuser.process()
+    if processfile == 'cmd_line.json' or processfile == 'remote_access_vpn.json':
+        logging.debug("Configuring remote access vpn")
+        #remote access vpn
+        rvpn = CsRemoteAccessVpn("remoteaccessvpn", config)
+        rvpn.process()
 
-    logging.debug("Configuring dhcp entry")
-    dhcp = CsDhcp("dhcpentry", config)
-    dhcp.process()
+    if processfile == 'cmd_line.json' or processfile == 'vpn_user_list.json':
+        logging.debug("Configuring vpn users list")
+        #remote access vpn users
+        vpnuser = CsVpnUser("vpnuserlist", config)
+        vpnuser.process()
 
-    logging.debug("Configuring load balancer")
-    lb = CsLoadBalancer("loadbalancer", config)
-    lb.process()
+    if processfile == 'cmd_line.json' or processfile == 'vm_dhcp_entry.json' or processfile == 'dhcp.json':
+        logging.debug("Configuring dhcp entry")
+        dhcp = CsDhcp("dhcpentry", config)
+        dhcp.process()
 
-    logging.debug("Configuring monitor service")
-    mon = CsMonitor("monitorservice", config)
-    mon.process()
+    if processfile == 'cmd_line.json' or processfile == 'load_balancer.json':
+        logging.debug("Configuring load balancer")
+        lb = CsLoadBalancer("loadbalancer", config)
+        lb.process()
 
-    logging.debug("Configuring iptables rules")
-    nf = CsNetfilters()
-    nf.compare(config.get_fw())
+    if processfile == 'cmd_line.json' or processfile == 'monitor_service.json':
+        logging.debug("Configuring monitor service")
+        mon = CsMonitor("monitorservice", config)
+        mon.process()
 
-    red = CsRedundant(config)
-    red.set()
+    if processfile == 'cmd_line.json' or processfile == 'firewall_rules.json' or processfile == 'network_acl.json':
+        logging.debug("Configuring iptables rules")
+        nf = CsNetfilters()
+        nf.compare(config.get_fw())
 
-    logging.debug("Configuring static routes")
-    static_routes = CsStaticRoutes("staticroutes", config)
-    static_routes.process()
+    if processfile == 'cmd_line.json':
+        red = CsRedundant(config)
+        red.set()
 
-    logging.debug("Configuring iptables rules done ...saving rules")
+    if processfile == 'cmd_line.json' or processfile == 'static_routes.json':
+        logging.debug("Configuring static routes")
+        static_routes = CsStaticRoutes("staticroutes", config)
+        static_routes.process()
 
-    # Save iptables configuration - will be loaded on reboot by the iptables-restore that is configured on /etc/rc.local
-    CsHelper.save_iptables("iptables-save", "/etc/iptables/router_rules.v4")
-    CsHelper.save_iptables("ip6tables-save", "/etc/iptables/router_rules.v6")
+    if processfile == 'cmd_line.json' or processfile == 'firewall_rules.json' or processfile == 'network_acl.json':
+        logging.debug("Configuring iptables rules done ...saving rules")
+
+        # Save iptables configuration - will be loaded on reboot by the iptables-restore that is configured on /etc/rc.local
+        CsHelper.save_iptables("iptables-save", "/etc/iptables/router_rules.v4")
+        CsHelper.save_iptables("ip6tables-save", "/etc/iptables/router_rules.v6")
 
 if __name__ == "__main__":
     main(sys.argv)
