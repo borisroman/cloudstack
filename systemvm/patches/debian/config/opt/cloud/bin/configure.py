@@ -955,7 +955,8 @@ def main(argv):
 
     logging.debug("Configuring iptables rules")
     nf = CsNetfilters()
-    nf.compare(config.get_fw())
+    nf.replace_chain(config.get_fw())
+
 
     red = CsRedundant(config)
     red.set()

@@ -168,6 +168,60 @@ class CsNetfilters(object):
         self.del_standard()
         self.get_unseen()
 
+
+    def replace_chain(self, rule_list):
+        #logging.debug(config)
+
+        # retrieve the tables and chains from the new rules
+        #rule_list = config.get_fw()
+
+        # Ensure all inbound/outbound chains have a default drop rule
+        for c in self.chain.get("filter"):
+            if c.startswith("ACL_INBOUND") or c.startswith("ACL_OUTBOUND"):
+                rule_list.append(["filter", "", "-A %s -j DROP" % c])
+
+        # retrieve the chains and tables from the list of rules
+        chains = {}
+        for rule in rule_list:
+            if rule[0] == '':
+                rule[0] = 'filter'
+            if rule[2].split()[1] not in chains:
+                chains[rule[0]] = rule[2].split()[1]
+        #logging.debug(chains)
+
+        # rename the existing chains
+        logging.debug("Renaming current chains with TMP appended")
+        for tbl in chains.iterkeys():
+            CsHelper.execute("iptables -t %s -E %s %s_TMP" % (tbl, chains[tbl], chains[tbl]))
+
+        # Create the new chains
+        logging.debug("Adding the new chains")
+        for tbl in chains.iterkeys():
+            CsHelper.execute("iptables -t %s -N %s" % (tbl, chains[tbl]))
+
+        # add new rules to new chain
+        for rule in rule_list:
+            new_rule = CsNetfilter()
+            new_rule.parse(rule[2])
+            new_rule.set_table(rule[0])
+            if isinstance(rule[1], int):
+                new_rule.set_count(rule[1])
+
+            # print "Add rule %s in table %s" % ( rule[2], new_rule.get_table())
+            logging.info("Add: rule=%s table=%s", rule[2], new_rule.get_table())
+
+            CsHelper.execute("iptables -t %s %s" % (new_rule.get_table(), rule[2]))
+
+        # Flush the old chains
+        logging.debug("Flushing the old chains")
+        for tbl in chains.iterkeys():
+            CsHelper.execute("iptables -t %s -F %s_TMP" % (tbl, chains[tbl]))
+
+        # Delete the old chains
+        logging.debug("Deleting the old chains")
+        for tbl in chains.iterkeys():
+            CsHelper.execute("iptables -t %s -X %s_TMP" % (tbl, chains[tbl]))
+
     def add_chain(self, rule):
         """ Add the given chain if it is not already present """
         if not self.has_chain(rule.get_table(), rule.get_chain()):
