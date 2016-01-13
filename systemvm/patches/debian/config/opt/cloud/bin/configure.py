@@ -909,12 +909,13 @@ def main(argv):
                         level=config.get_level(),
                         format=config.get_format())
 
+    # Load stored ip adresses from disk to CsConfig()
     config.set_address()
 
-    logging.debug("Configuring ip addresses")
-    # IP configuration
-    config.address().compare() # TODO Is this needed every run?
-    config.address().process() # TODO Is this needed every run?
+    if process_file is "cmd_line.json" or process_file is "ip_associations.json" or process_file is "ip_aliases.json":
+        logging.debug("Configuring ip addresses")
+        config.address().compare()
+        config.address().process()
 
     if process_file is "cmd_line.json" or process_file is "vm_password.json":
         logging.debug("Configuring vmpassword")
