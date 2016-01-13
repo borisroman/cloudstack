@@ -954,10 +954,11 @@ def main(argv):
         vpns.process()
         iptables_change = True
 
-    logging.debug("Configuring remote access vpn")
-    #remote access vpn
-    rvpn = CsRemoteAccessVpn("remoteaccessvpn", config)
-    rvpn.process()
+    if process_file is "cmd_line.json" or process_file is "remote_access_vpn.json":
+        logging.debug("Configuring remote access vpn")
+        rvpn = CsRemoteAccessVpn("remoteaccessvpn", config)
+        rvpn.process()
+        iptables_change = True
 
     logging.debug("Configuring vpn users list")
     #remote access vpn users
