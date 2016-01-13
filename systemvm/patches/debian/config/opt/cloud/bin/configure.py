@@ -980,9 +980,10 @@ def main(argv):
         logging.debug("Configuring load balancer")
         iptables_change = True
 
-    logging.debug("Configuring monitor service")
-    mon = CsMonitor("monitorservice", config)
-    mon.process()
+    if process_file is "cmd_line.json" or process_file is "monitor_service.json":
+        logging.debug("Configuring monitor service")
+        mon = CsMonitor("monitorservice", config)
+        mon.process()
 
     logging.debug("Configuring iptables rules")
     nf = CsNetfilters()
