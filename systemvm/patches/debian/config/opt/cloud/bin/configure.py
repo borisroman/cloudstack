@@ -926,16 +926,20 @@ def main(argv):
         metadata = CsVmMetadata('vmdata', config)
         metadata.process()
 
+    # Always run both CsAcl().process() methods
+    # They fill the base rules in config.fw[]
+    acls = CsAcl('networkacl', config)
+    acls.process()
+
+    acls = CsAcl('firewallrules', config)
+    acls.process()
+
     if process_file is "cmd_line.json" or process_file is "network_acl.json":
         logging.debug("Configuring networkacl")
-        acls = CsAcl('networkacl', config)
-        acls.process()
         iptables_change = True
 
     if process_file is "cmd_line.json" or process_file is "firewall_rules.json":
         logging.debug("Configuring firewall rules")
-        acls = CsAcl('firewallrules', config)
-        acls.process()
         iptables_change = True
 
     if process_file is "cmd_line.json" or process_file is "forwarding_rules.json":
