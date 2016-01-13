@@ -898,7 +898,7 @@ class CsForwardingRules(CsDataBag):
 def main(argv):
     # The file we are currently processing, if it is "cmd_line.json" everything will be processed.
     process_file = argv[1]
-    
+
     # Track if changes need to be committed to NetFilter
     iptables_change = False
 
@@ -926,9 +926,11 @@ def main(argv):
         metadata = CsVmMetadata('vmdata', config)
         metadata.process()
 
-    logging.debug("Configuring networkacl")
-    acls = CsAcl('networkacl', config)
-    acls.process()
+    if process_file is "cmd_line.json" or process_file is "network_acl.json":
+        logging.debug("Configuring networkacl")
+        acls = CsAcl('networkacl', config)
+        acls.process()
+        iptables_change = True
 
     logging.debug("Configuring firewall rules")
     acls = CsAcl('firewallrules', config)
