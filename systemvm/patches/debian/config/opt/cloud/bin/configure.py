@@ -898,6 +898,9 @@ class CsForwardingRules(CsDataBag):
 def main(argv):
     # The file we are currently processing, if it is "cmd_line.json" everything will be processed.
     process_file = argv[1]
+    
+    # Track if changes need to be committed to NetFilter
+    iptables_change = False
 
     # The "GLOBAL" Configuration object
     config = CsConfig()
