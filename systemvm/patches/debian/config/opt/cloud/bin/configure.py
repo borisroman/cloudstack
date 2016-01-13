@@ -288,7 +288,7 @@ class CsAcl(CsDataBag):
             if item == "id":
                 continue
             if self.config.is_vpc():
-                dev_obj = self.AclDevice(self.dbag[item], self.config).create()
+                self.AclDevice(self.dbag[item], self.config).create()
             else:
                 self.AclIP(self.dbag[item], self.config).create()
 
