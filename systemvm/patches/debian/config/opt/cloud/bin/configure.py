@@ -899,6 +899,10 @@ def main(argv):
     # The file we are currently processing, if it is "cmd_line.json" everything will be processed.
     process_file = argv[1]
 
+    # process_file can be None, if so assume cmd_line.json
+    if process_file is None:
+        process_file = "cmd_line.json"
+
     # Track if changes need to be committed to NetFilter
     iptables_change = False
 
