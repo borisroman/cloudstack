@@ -943,6 +943,9 @@ def main(argv):
     rvpn = CsRemoteAccessVpn("remoteaccessvpn", config)
     rvpn.process()
 
+    lb = CsLoadBalancer("loadbalancer", config)
+    lb.process()
+
     if process_file is "cmd_line.json" or process_file is "network_acl.json":
         logging.debug("Configuring networkacl")
         iptables_change = True
@@ -973,9 +976,9 @@ def main(argv):
         dhcp = CsDhcp("dhcpentry", config)
         dhcp.process()
 
-    logging.debug("Configuring load balancer")
-    lb = CsLoadBalancer("loadbalancer", config)
-    lb.process()
+    if process_file is "cmd_line.json" or process_file is "load_balancer.json":
+        logging.debug("Configuring load balancer")
+        iptables_change = True
 
     logging.debug("Configuring monitor service")
     mon = CsMonitor("monitorservice", config)
