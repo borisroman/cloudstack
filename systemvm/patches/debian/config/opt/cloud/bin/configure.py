@@ -985,9 +985,11 @@ def main(argv):
         mon = CsMonitor("monitorservice", config)
         mon.process()
 
-    logging.debug("Configuring iptables rules")
-    nf = CsNetfilters()
-    nf.compare(config.get_fw())
+    # If iptable rules have changed, apply them.
+    if iptables_change:
+        logging.debug("Configuring iptables rules")
+        nf = CsNetfilters()
+        nf.compare(config.get_fw())
 
     red = CsRedundant(config)
     red.set()
