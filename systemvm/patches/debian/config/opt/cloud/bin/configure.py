@@ -913,6 +913,8 @@ def main(argv):
                         level=config.get_level(),
                         format=config.get_format())
 
+    print "[INFO] update_config.py main() :: Processing incoming file => %s" % process_file
+
     # Load stored ip adresses from disk to CsConfig()
     config.set_address()
 
