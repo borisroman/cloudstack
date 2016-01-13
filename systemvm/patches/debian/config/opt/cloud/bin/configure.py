@@ -965,9 +965,10 @@ def main(argv):
         vpnuser = CsVpnUser("vpnuserlist", config)
         vpnuser.process()
 
-    logging.debug("Configuring dhcp entry")
-    dhcp = CsDhcp("dhcpentry", config)
-    dhcp.process()
+    if process_file is "cmd_line.json" or process_file is "vm_dhcp_entry.json" or process_file is "dhcp.json":
+        logging.debug("Configuring dhcp entry")
+        dhcp = CsDhcp("dhcpentry", config)
+        dhcp.process()
 
     logging.debug("Configuring load balancer")
     lb = CsLoadBalancer("loadbalancer", config)
