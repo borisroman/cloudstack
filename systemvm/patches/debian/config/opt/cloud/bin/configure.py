@@ -994,9 +994,10 @@ def main(argv):
     red = CsRedundant(config)
     red.set()
 
-    logging.debug("Configuring static routes")
-    static_routes = CsStaticRoutes("staticroutes", config)
-    static_routes.process()
+    if process_file is "cmd_line.json" or process_file is "static_routes.json":
+        logging.debug("Configuring static routes")
+        static_routes = CsStaticRoutes("staticroutes", config)
+        static_routes.process()
 
     if iptables_change:
         logging.debug("Configuring iptables rules done ...saving rules")
