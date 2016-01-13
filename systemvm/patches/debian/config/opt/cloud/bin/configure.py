@@ -896,24 +896,32 @@ class CsForwardingRules(CsDataBag):
 
 
 def main(argv):
+    # The file we are currently processing, if it is "cmd_line.json" everything will be processed.
+    process_file = argv[1]
+
+    # The "GLOBAL" Configuration object
     config = CsConfig()
+
     logging.basicConfig(filename=config.get_logger(),
                         level=config.get_level(),
                         format=config.get_format())
+
     config.set_address()
 
     logging.debug("Configuring ip addresses")
     # IP configuration
-    config.address().compare()
-    config.address().process()
+    config.address().compare() # TODO Is this needed every run?
+    config.address().process() # TODO Is this needed every run?
 
-    logging.debug("Configuring vmpassword")
-    password = CsPassword("vmpassword", config)
-    password.process()
+    if process_file is "cmd_line.json" or process_file is "vm_password.json":
+        logging.debug("Configuring vmpassword")
+        password = CsPassword("vmpassword", config)
+        password.process()
 
-    logging.debug("Configuring vmdata")
-    metadata = CsVmMetadata('vmdata', config)
-    metadata.process()
+    if process_file is "cmd_line.json" or process_file is "vm_metadata.json":
+        logging.debug("Configuring vmdata")
+        metadata = CsVmMetadata('vmdata', config)
+        metadata.process()
 
     logging.debug("Configuring networkacl")
     acls = CsAcl('networkacl', config)
