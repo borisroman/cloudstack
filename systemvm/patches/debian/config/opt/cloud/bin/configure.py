@@ -904,12 +904,11 @@ def main(argv):
 
     if processfile is None:
         processfile = 'cmd_line.json'
-    if processfile == 'cmd_line.json' or processfile == 'guest_network.json' or processfile == 'ip_associations.json':
-        config.set_address()
 
     if processfile == 'cmd_line.json' or processfile == 'guest_network.json' or processfile == 'ip_associations.json':
         logging.debug("Configuring ip addresses")
         # IP configuration
+        config.set_address()
         config.address().compare()
         config.address().process()
 
