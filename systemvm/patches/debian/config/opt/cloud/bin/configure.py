@@ -932,9 +932,11 @@ def main(argv):
         acls.process()
         iptables_change = True
 
-    logging.debug("Configuring firewall rules")
-    acls = CsAcl('firewallrules', config)
-    acls.process()
+    if process_file is "cmd_line.json" or process_file is "firewall_rules.json":
+        logging.debug("Configuring firewall rules")
+        acls = CsAcl('firewallrules', config)
+        acls.process()
+        iptables_change = True
 
     logging.debug("Configuring PF rules")
     fwd = CsForwardingRules("forwardingrules", config)
