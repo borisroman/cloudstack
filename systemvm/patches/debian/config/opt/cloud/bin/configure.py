@@ -938,9 +938,11 @@ def main(argv):
         acls.process()
         iptables_change = True
 
-    logging.debug("Configuring PF rules")
-    fwd = CsForwardingRules("forwardingrules", config)
-    fwd.process()
+    if process_file is "cmd_line.json" or process_file is "forwarding_rules.json":
+        logging.debug("Configuring PF rules")
+        fwd = CsForwardingRules("forwardingrules", config)
+        fwd.process()
+        iptables_change = True
 
     logging.debug("Configuring s2s vpn")
     vpns = CsSite2SiteVpn("site2sitevpn", config)
