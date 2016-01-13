@@ -934,6 +934,15 @@ def main(argv):
     acls = CsAcl('firewallrules', config)
     acls.process()
 
+    fwd = CsForwardingRules("forwardingrules", config)
+    fwd.process()
+
+    vpns = CsSite2SiteVpn("site2sitevpn", config)
+    vpns.process()
+
+    rvpn = CsRemoteAccessVpn("remoteaccessvpn", config)
+    rvpn.process()
+
     if process_file is "cmd_line.json" or process_file is "network_acl.json":
         logging.debug("Configuring networkacl")
         iptables_change = True
@@ -944,20 +953,14 @@ def main(argv):
 
     if process_file is "cmd_line.json" or process_file is "forwarding_rules.json":
         logging.debug("Configuring PF rules")
-        fwd = CsForwardingRules("forwardingrules", config)
-        fwd.process()
         iptables_change = True
 
     if process_file is "cmd_line.json" or process_file is "site_2_site_vpn.json":
         logging.debug("Configuring s2s vpn")
-        vpns = CsSite2SiteVpn("site2sitevpn", config)
-        vpns.process()
         iptables_change = True
 
     if process_file is "cmd_line.json" or process_file is "remote_access_vpn.json":
         logging.debug("Configuring remote access vpn")
-        rvpn = CsRemoteAccessVpn("remoteaccessvpn", config)
-        rvpn.process()
         iptables_change = True
 
     if process_file is "cmd_line.json" or process_file is "vpn_user_list.json":
