@@ -960,10 +960,10 @@ def main(argv):
         rvpn.process()
         iptables_change = True
 
-    logging.debug("Configuring vpn users list")
-    #remote access vpn users
-    vpnuser = CsVpnUser("vpnuserlist", config)
-    vpnuser.process()
+    if process_file is "cmd_line.json" or process_file is "vpn_user_list.json":
+        logging.debug("Configuring vpn users list")
+        vpnuser = CsVpnUser("vpnuserlist", config)
+        vpnuser.process()
 
     logging.debug("Configuring dhcp entry")
     dhcp = CsDhcp("dhcpentry", config)
