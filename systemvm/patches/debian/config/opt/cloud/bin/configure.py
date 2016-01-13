@@ -944,9 +944,11 @@ def main(argv):
         fwd.process()
         iptables_change = True
 
-    logging.debug("Configuring s2s vpn")
-    vpns = CsSite2SiteVpn("site2sitevpn", config)
-    vpns.process()
+    if process_file is "cmd_line.json" or process_file is "site_2_site_vpn.json":
+        logging.debug("Configuring s2s vpn")
+        vpns = CsSite2SiteVpn("site2sitevpn", config)
+        vpns.process()
+        iptables_change = True
 
     logging.debug("Configuring remote access vpn")
     #remote access vpn
