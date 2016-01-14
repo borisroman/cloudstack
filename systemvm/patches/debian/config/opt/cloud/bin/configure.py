@@ -913,22 +913,20 @@ def main(argv):
                         level=config.get_level(),
                         format=config.get_format())
 
-    print "[INFO] update_config.py main() :: Processing incoming file => %s" % process_file
-
     # Load stored ip adresses from disk to CsConfig()
     config.set_address()
 
-    if process_file is "cmd_line.json" or process_file is "ip_associations.json" or process_file is "ip_aliases.json":
+    if process_file == "cmd_line.json" or process_file == "ip_associations.json" or process_file == "ip_aliases.json":
         logging.debug("Configuring ip addresses")
         config.address().compare()
         config.address().process()
 
-    if process_file is "cmd_line.json" or process_file is "vm_password.json":
+    if process_file == "cmd_line.json" or process_file == "vm_password.json":
         logging.debug("Configuring vmpassword")
         password = CsPassword("vmpassword", config)
         password.process()
 
-    if process_file is "cmd_line.json" or process_file is "vm_metadata.json":
+    if process_file == "cmd_line.json" or process_file == "vm_metadata.json":
         logging.debug("Configuring vmdata")
         metadata = CsVmMetadata('vmdata', config)
         metadata.process()
@@ -953,41 +951,41 @@ def main(argv):
     lb = CsLoadBalancer("loadbalancer", config)
     lb.process()
 
-    if process_file is "cmd_line.json" or process_file is "network_acl.json":
+    if process_file == "cmd_line.json" or process_file == "network_acl.json":
         logging.debug("Configuring networkacl")
         iptables_change = True
 
-    if process_file is "cmd_line.json" or process_file is "firewall_rules.json":
+    if process_file == "cmd_line.json" or process_file == "firewall_rules.json":
         logging.debug("Configuring firewall rules")
         iptables_change = True
 
-    if process_file is "cmd_line.json" or process_file is "forwarding_rules.json":
+    if process_file == "cmd_line.json" or process_file == "forwarding_rules.json":
         logging.debug("Configuring PF rules")
         iptables_change = True
 
-    if process_file is "cmd_line.json" or process_file is "site_2_site_vpn.json":
+    if process_file == "cmd_line.json" or process_file == "site_2_site_vpn.json":
         logging.debug("Configuring s2s vpn")
         iptables_change = True
 
-    if process_file is "cmd_line.json" or process_file is "remote_access_vpn.json":
+    if process_file == "cmd_line.json" or process_file == "remote_access_vpn.json":
         logging.debug("Configuring remote access vpn")
         iptables_change = True
 
-    if process_file is "cmd_line.json" or process_file is "vpn_user_list.json":
+    if process_file == "cmd_line.json" or process_file == "vpn_user_list.json":
         logging.debug("Configuring vpn users list")
         vpnuser = CsVpnUser("vpnuserlist", config)
         vpnuser.process()
 
-    if process_file is "cmd_line.json" or process_file is "vm_dhcp_entry.json" or process_file is "dhcp.json":
+    if process_file == "cmd_line.json" or process_file == "vm_dhcp_entry.json" or process_file == "dhcp.json":
         logging.debug("Configuring dhcp entry")
         dhcp = CsDhcp("dhcpentry", config)
         dhcp.process()
 
-    if process_file is "cmd_line.json" or process_file is "load_balancer.json":
+    if process_file == "cmd_line.json" or process_file == "load_balancer.json":
         logging.debug("Configuring load balancer")
         iptables_change = True
 
-    if process_file is "cmd_line.json" or process_file is "monitor_service.json":
+    if process_file == "cmd_line.json" or process_file == "monitor_service.json":
         logging.debug("Configuring monitor service")
         mon = CsMonitor("monitorservice", config)
         mon.process()
@@ -1001,7 +999,7 @@ def main(argv):
     red = CsRedundant(config)
     red.set()
 
-    if process_file is "cmd_line.json" or process_file is "static_routes.json":
+    if process_file == "cmd_line.json" or process_file == "static_routes.json":
         logging.debug("Configuring static routes")
         static_routes = CsStaticRoutes("staticroutes", config)
         static_routes.process()
