@@ -922,6 +922,7 @@ def main(argv):
         config.address().process()
 
     if process_file == "cmd_line.json" or process_file == "guest_network.json":
+        logging.debug("Configuring Guest Network")
         iptables_change = True
 
     if process_file == "cmd_line.json" or process_file == "vm_password.json":
