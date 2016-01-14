@@ -916,10 +916,13 @@ def main(argv):
     # Load stored ip adresses from disk to CsConfig()
     config.set_address()
 
-    if process_file == "cmd_line.json" or process_file == "ip_associations.json" or process_file == "ip_aliases.json":
+    if process_file == "cmd_line.json" or process_file == "ip_associations.json" or process_file == "ip_aliases.json" or process_file == "guest_network.json":
         logging.debug("Configuring ip addresses")
         config.address().compare()
         config.address().process()
+
+    if process_file == "cmd_line.json" or process_file == "guest_network.json":
+        iptables_change = True
 
     if process_file == "cmd_line.json" or process_file == "vm_password.json":
         logging.debug("Configuring vmpassword")
