@@ -962,7 +962,7 @@ def main(argv):
         logging.debug("Configuring firewall rules")
         iptables_change = True
 
-    if process_file == "cmd_line.json" or process_file == "forwarding_rules.json":
+    if process_file == "cmd_line.json" or process_file == "forwarding_rules.json" or process_file == "staticnat_rules.json":
         logging.debug("Configuring PF rules")
         iptables_change = True
 
