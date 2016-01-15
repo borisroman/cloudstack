@@ -999,8 +999,10 @@ def main(argv):
         nf = CsNetfilters()
         nf.compare(config.get_fw())
 
-    red = CsRedundant(config)
-    red.set()
+    # A router only becomes redundant at startup, when the cmd_line.json is passed.
+    if process_file == "cmd_line.json":
+        red = CsRedundant(config)
+        red.set()
 
     if process_file == "cmd_line.json" or process_file == "static_routes.json":
         logging.debug("Configuring static routes")
