@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -92,6 +93,8 @@ public class ExecutionCounterTest {
         executorService.execute(task3);
 
         executorService.shutdown();
+
+        executorService.awaitTermination(60, TimeUnit.SECONDS);
 
         assertThat(counterTask1.get(), equalTo(4));
         assertThat(counterTask2.get(), equalTo(2));
