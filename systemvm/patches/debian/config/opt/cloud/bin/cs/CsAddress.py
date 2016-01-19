@@ -362,7 +362,7 @@ class CsIP:
         self.fw.append(
             ["filter", "", "-A INPUT -i eth1 -p tcp -m tcp --dport 3922 -m state --state NEW,ESTABLISHED -j ACCEPT"])
         
-        self.fw.append(["filter", "", "-P INPUT DROP"])
+        self.fw.append(["filter", "", " -P INPUT DROP"])
         self.fw.append(["filter", "", "-P FORWARD DROP"])
 
         
@@ -484,10 +484,9 @@ class CsIP:
                             ])
 
         if self.get_type() in ["public"]:
-            self.fw.append(["", "front",
-                            "-A FORWARD -o %s -d %s -j ACL_INBOUND_%s" % (
-                                self.dev, self.address['network'], self.dev)
-                            ])
+            cmd = "-A FORWARD -o %s -d %s -j ACL_INBOUND_%s" % (self.dev, self.address['network'], self.dev)
+            print(cmd)
+            self.fw.append(["", "front", cmd])
             self.fw.append(
                 ["mangle", "", "-A FORWARD -j VPN_STATS_%s" % self.dev])
             self.fw.append(

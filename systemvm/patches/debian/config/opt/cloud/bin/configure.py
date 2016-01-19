@@ -277,11 +277,12 @@ class CsAcl(CsDataBag):
             def create(self):
                 rstr = ""
                 rstr = "%s -A %s -p %s %s" % (rstr, self.chain, self.protocol, self.dest)
+                print(rstr)
                 if self.type == "icmp":
                     rstr = "%s -m icmp --icmp-type %s" % (rstr, self.icmp_type)
                 rstr = "%s %s -j %s" % (rstr, self.dport, self.action)
                 rstr = rstr.replace("  ", " ").lstrip()
-                self.fw.append([self.table, self.count, rstr])
+                self.fw.append([self.table, "", rstr])
 
     def process(self):
         for item in self.dbag:
