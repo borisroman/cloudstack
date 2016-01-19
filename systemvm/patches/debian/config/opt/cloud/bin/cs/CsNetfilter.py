@@ -15,10 +15,12 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+from __future__ import print_function
+
 import CsHelper
-from pprint import pprint
-from CsDatabag import CsDataBag, CsCmdLine
+from CsDatabag import CsCmdLine
 import logging
+from cs_iptables_save import Tables
 
 
 class CsChain(object):
@@ -81,6 +83,7 @@ class CsNetfilters(object):
 
     def __init__(self, load=True):
         self.rules = []
+        self.iptablerules = []
         self.table = CsTable()
         self.chain = CsChain()
         if load:
@@ -127,7 +130,7 @@ class CsNetfilters(object):
         for r in del_list:
             cmd = "iptables -t %s %s" % (r.get_table(), r.to_str(True))
             logging.debug("unseen cmd:  %s ", cmd)
-            CsHelper.execute(cmd)
+            self.iptablerules.append(cmd)
             # print "Delete rule %s from table %s" % (r.to_str(True), r.get_table())
             logging.info("Delete rule %s from table %s", r.to_str(True), r.get_table())
 
@@ -164,14 +167,25 @@ class CsNetfilters(object):
                 if isinstance(fw[1], int):
                     cpy = cpy.replace("-A %s" % new_rule.get_chain(), '-I %s %s' % (new_rule.get_chain(), fw[1]))
 
-                CsHelper.execute("iptables -t %s %s" % (new_rule.get_table(), cpy))
+                self.iptablerules.append("iptables -t %s %s" % (new_rule.get_table(), cpy))
         self.del_standard()
         self.get_unseen()
+        self.apply_rules()
+
+    def apply_rules(self):
+        with open("/tmp/rules.save.tmp", 'w') as f:
+            for r in self.iptablerules:
+                print(r, file=f)
+
+        chains = Tables("/tmp/rules.save.tmp")
+        chains.table_printout()
+
+        #CsHelper.execute("iptables-restore < /tmp/rules.save")
 
     def add_chain(self, rule):
         """ Add the given chain if it is not already present """
         if not self.has_chain(rule.get_table(), rule.get_chain()):
-            CsHelper.execute("iptables -t %s -N %s" % (rule.get_table(), rule.get_chain()))
+            self.iptablerules.append("iptables -t %s -N %s" % (rule.get_table(), rule.get_chain()))
             self.chain.add(rule.get_table(), rule.get_chain())
 
     def del_standard(self):
