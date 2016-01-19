@@ -281,7 +281,7 @@ class CsAcl(CsDataBag):
                     rstr = "%s -m icmp --icmp-type %s" % (rstr, self.icmp_type)
                 rstr = "%s %s -j %s" % (rstr, self.dport, self.action)
                 rstr = rstr.replace("  ", " ").lstrip()
-                self.fw.append([self.table, self.count, rstr])
+                self.fw.append([self.table, "", rstr])
 
     def process(self):
         for item in self.dbag:
