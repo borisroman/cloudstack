@@ -173,14 +173,9 @@ class CsNetfilters(object):
         self.apply_rules()
 
     def apply_rules(self):
-        with open("/tmp/rules.save.tmp", 'w') as f:
-            for r in self.iptablerules:
-                print(r, file=f)
-
-        chains = Tables("/tmp/rules.save.tmp")
+        chains = Tables(self.iptablerules)
         chains.table_printout()
 
-        #CsHelper.execute("iptables-restore < /tmp/rules.save")
 
     def add_chain(self, rule):
         """ Add the given chain if it is not already present """

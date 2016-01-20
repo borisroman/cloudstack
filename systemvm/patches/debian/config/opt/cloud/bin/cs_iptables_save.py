@@ -143,12 +143,12 @@ class Tables(UserDict):
     some chaingroups in tables are predef: filter, nat, mangle, raw
     """
 
-    def __init__(self, fname="/tmp/rules.save.tmp"):
+    def __init__(self, rules):
         """init Tables Object is easy going"""
         UserDict.__init__(self)
-        self.reset(fname)
+        self.reset(rules)
 
-    def reset(self, fname):
+    def reset(self, rules):
         """all predefined Chains aka lists are setup as new here"""
         filter = Chains("filter", ["INPUT", "FORWARD", "OUTPUT"])
 
@@ -164,8 +164,8 @@ class Tables(UserDict):
         self.data["mangle"] = mangle
         self.data["nat"] = nat
         self.data["raw"] = raw
-        if len(fname) > 0:
-            self.linecounter = self.read_file(fname)
+        if rules is not None:
+            self.read_file(rules)
 
     def table_printout(self):
         """printout nonempty tabulars in fixed sequence"""
@@ -201,37 +201,26 @@ class Tables(UserDict):
         fam_dict = self.data[fam]           # select the group dictionary
         fam_dict.put_into_fgr(rest)         # do action thers
 
-    def read_file(self, fname):
+    def read_file(self, rules):
         """read file into Tables-object"""
         self.linecounter = 0
         self.tblctr = 0
-        try:
-            fil0 = open(fname, 'r')
-            for zeile in fil0:
-                line = str(zeile.strip())
-                self.linecounter += 1
-                if line.startswith('#'):
-                    continue
-                for element in ['\$', '\(', '\)', ]:
-                    if re.search(element, line):
-                        m1 = "Line %d:\n%s\nplain files only, " % \
-                             (self.linecounter, line)
-                        if element in ['\(', '\)', ]:
-                            m2 = "unable to convert shell functions, abort"
-                        else:
-                            m2 = "unable to resolve shell variables, abort"
-                        msg = m1 + m2
-                        raise ConverterError(msg)
-                for muster in ["^/sbin/iptables ", "^iptables "]:
-                    if re.search(muster, line):
-                        self.tblctr += 1
-                        self.put_into_tables(line)
-            fil0.close()
-        except ValueError as err:
-            print (fname + ": "), err
-            sys.exit(1)
-        except IOError as err:
-            print(fname + ": "), err.strerror
-            sys.exit(1)
-        if not fname == "reference-one":
-            print("# generated from: %s" % (fname))
+        for zeile in rules:
+            line = str(zeile.strip())
+            self.linecounter += 1
+            if line.startswith('#'):
+                continue
+            for element in ['\$', '\(', '\)', ]:
+                if re.search(element, line):
+                    m1 = "Line %d:\n%s\nplain files only, " % \
+                         (self.linecounter, line)
+                    if element in ['\(', '\)', ]:
+                        m2 = "unable to convert shell functions, abort"
+                    else:
+                        m2 = "unable to resolve shell variables, abort"
+                    msg = m1 + m2
+                    raise ConverterError(msg)
+            for muster in ["^/sbin/iptables ", "^iptables "]:
+                if re.search(muster, line):
+                    self.tblctr += 1
+                    self.put_into_tables(line)
