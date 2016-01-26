@@ -145,7 +145,6 @@ class CsNetfilters(object):
             new_rule = CsNetfilter()
             new_rule.parse(fw[2])
             new_rule.set_table(fw[0])
-            self.add_chain(new_rule)
             self.has_rule(new_rule)
 
         self.del_standard()
@@ -181,13 +180,6 @@ class CsNetfilters(object):
 
         # COMMIT all rules.
         CsHelper.execute("iptables-restore < /tmp/rules.save")
-
-    def add_chain(self, rule):
-        """ Add the given chain if it is not already present """
-        if not self.has_chain(rule.get_table(), rule.get_chain()) and rule.get_chain():
-            cmd = "iptable s-t %s -N %s" % (rule.get_table(), rule.get_chain())
-            self.iptablerules.append(cmd)
-            self.chain.add(rule.get_table(), rule.get_chain())
 
     def del_standard(self):
         """ Del rules that are there but should not be deleted

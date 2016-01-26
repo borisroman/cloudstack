@@ -103,8 +103,8 @@ class Chains(UserDict):
             chain_name = liste[1]
             existing = self.data.keys()
             if chain_name not in existing:
-                msg = "invalid chain name: %s" % (chain_name)
-                raise ValueError(msg)
+                self.data[chain_name] = []
+                self.poli[chain_name] = "-"
             kette = self.data[chain_name]
             kette.insert(0, content.replace("-I", "-A"))
             self.data[chain_name] = kette
@@ -113,8 +113,8 @@ class Chains(UserDict):
             chain_name = liste[1]
             existing = self.data.keys()
             if chain_name not in existing:
-                msg = "invalid chain name: %s" % (chain_name)
-                raise ValueError(msg)
+                self.data[chain_name] = []
+                self.poli[chain_name] = "-"
             kette = self.data[chain_name]
             kette.append(content)
             self.data[chain_name] = kette

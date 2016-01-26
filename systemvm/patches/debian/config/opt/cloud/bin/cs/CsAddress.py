@@ -484,8 +484,8 @@ class CsIP:
                             ])
 
         if self.get_type() in ["public"]:
-            cmd = "-A FORWARD -o %s -d %s -j ACL_INBOUND_%s" % (self.dev, self.address['network'], self.dev)
-            self.fw.append(["", "front", cmd])
+            #cmd = "-A FORWARD -o %s -d %s -j ACL_INBOUND_%s" % (self.dev, self.address['network'], self.dev)
+            #self.fw.append(["", "front", cmd])
             self.fw.append(
                 ["mangle", "", "-A FORWARD -j VPN_STATS_%s" % self.dev])
             self.fw.append(
