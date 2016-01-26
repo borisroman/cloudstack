@@ -172,7 +172,12 @@ class CsNetfilters(object):
         self.apply_rules()
 
     def apply_rules(self):
-        chains = Tables(self.iptablerules)
+        s = []
+        for r in self.iptablerules:
+            if r not in s:
+                s.append(r)
+
+        chains = Tables(s)
         chains.table_printout()
 
 
