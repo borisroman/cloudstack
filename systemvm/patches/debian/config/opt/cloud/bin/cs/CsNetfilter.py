@@ -183,9 +183,6 @@ class CsNetfilters(object):
         # COMMIT all rules.
         CsHelper.execute("iptables-restore < /tmp/rules.save")
 
-
-
-
     def add_chain(self, rule):
         """ Add the given chain if it is not already present """
         if not self.has_chain(rule.get_table(), rule.get_chain()) and rule.get_chain():
