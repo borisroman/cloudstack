@@ -804,7 +804,7 @@ class CsForwardingRules(CsDataBag):
                 rule['internal_ip'],
                 self.portsToString(rule['internal_ports'], '-')
               )
-        fw4 = "-j SNAT --to-source %s -A POSTROUTING -s %s -d %s/32 -o %s -p %s -m %s --dport %s" % \
+        fw4 = "-A POSTROUTING -j SNAT --to-source %s -s %s -d %s/32 -o %s -p %s -m %s --dport %s" % \
               (
                 self.getGuestIp(),
                 self.getNetworkByIp(rule['internal_ip']),
