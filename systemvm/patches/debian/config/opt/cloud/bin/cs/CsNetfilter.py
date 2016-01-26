@@ -180,6 +180,11 @@ class CsNetfilters(object):
         chains = Tables(s)
         chains.table_printout()
 
+        # COMMIT all rules.
+        CsHelper.execute("iptables-restore < /tmp/rules.save")
+
+
+
 
     def add_chain(self, rule):
         """ Add the given chain if it is not already present """
