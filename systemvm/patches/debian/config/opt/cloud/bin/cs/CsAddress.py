@@ -15,9 +15,8 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-from CsDatabag import CsDataBag, CsCmdLine
+from CsDatabag import CsDataBag
 from CsApp import CsApache, CsDnsmasq, CsPasswdSvc
-import CsHelper
 import logging
 from netaddr import IPAddress, IPNetwork
 import CsHelper
@@ -198,7 +197,7 @@ class CsInterface:
         return self.get_attr("add")
 
     def to_str(self):
-        pprint(self.address)
+        print(self.address)
 
 
 class CsDevice:
@@ -402,8 +401,7 @@ class CsIP:
 
         self.fw.append(["filter", "", "-A INPUT -d 224.0.0.18/32 -j ACCEPT"])
         self.fw.append(["filter", "", "-A INPUT -d 225.0.0.50/32 -j ACCEPT"])
-        self.fw.append(["filter", "", "-A INPUT -i %s -m state --state RELATED,ESTABLISHED -j ACCEPT" %
-                        self.dev])
+        self.fw.append(["filter", "", "-A INPUT -i %s -m state --state RELATED,ESTABLISHED -j ACCEPT" % self.dev])
         self.fw.append(["filter", "", "-A INPUT -p icmp -j ACCEPT"])
         self.fw.append(["filter", "", "-A INPUT -i lo -j ACCEPT"])
 
@@ -506,6 +504,9 @@ class CsIP:
 
         self.fw.append(["filter", "", "-A INPUT -d 224.0.0.18/32 -j ACCEPT"])
         self.fw.append(["filter", "", "-A INPUT -d 225.0.0.50/32 -j ACCEPT"])
+        self.fw.append(["filter", "", "-A INPUT -i %s -m state --state RELATED,ESTABLISHED -j ACCEPT" % self.dev])
+        self.fw.append(["filter", "", "-A INPUT -p icmp -j ACCEPT"])
+        self.fw.append(["filter", "", "-A INPUT -i lo -j ACCEPT"])
 
         self.fw.append(["filter", "", "-A INPUT -p icmp -j ACCEPT"])
         self.fw.append(["filter", "", "-A INPUT -i eth0 -p tcp -m tcp --dport 3922 -m state --state NEW,ESTABLISHED -j ACCEPT"])
