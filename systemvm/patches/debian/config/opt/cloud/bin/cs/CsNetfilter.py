@@ -179,7 +179,11 @@ class CsNetfilters(object):
         chains.table_printout()
 
         # COMMIT all rules.
-        CsHelper.execute("iptables-restore < /tmp/rules.save")
+        result = CsHelper.execute("iptables-restore < /tmp/rules.save")
+        if result:
+            logging.info("iptables-restore result: %s", result)
+        else:
+            logging.info("iptables-restore result: success!")
 
     def del_standard(self):
         """ Del rules that are there but should not be deleted
