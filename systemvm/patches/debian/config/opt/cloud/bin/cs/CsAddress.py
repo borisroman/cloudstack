@@ -442,6 +442,13 @@ class CsIP:
         self.fw.append(["mangle", "front", "-A PREROUTING " +
                         "-m state --state RELATED,ESTABLISHED " +
                         "-j CONNMARK --restore-mark --nfmask 0xffffffff --ctmask 0xffffffff"])
+
+        self.fw.append(["", "front", "-A FORWARD -j NETWORK_STATS"])
+        self.fw.append(["", "front", "-A INPUT -j NETWORK_STATS"])
+        self.fw.append(["", "front", "-A OUTPUT -j NETWORK_STATS"])
+
+        self.fw.append(["filter", "", "-A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT"])
+
         if self.get_type() in ["guest"]:
             self.fw.append(["filter", "", "-A FORWARD -d %s -o %s -j ACL_INBOUND_%s" %
                             (self.address['network'], self.dev, self.dev)])
@@ -488,12 +495,6 @@ class CsIP:
                 ["mangle", "", "-A VPN_STATS_%s -i %s -m mark --mark 0x524/0xffffffff" % (self.dev, self.dev)])
             self.fw.append(
                 ["", "front", "-A FORWARD -j NETWORK_STATS_%s" % self.dev])
-
-        self.fw.append(["", "front", "-A FORWARD -j NETWORK_STATS"])
-        self.fw.append(["", "front", "-A INPUT -j NETWORK_STATS"])
-        self.fw.append(["", "front", "-A OUTPUT -j NETWORK_STATS"])
-
-        self.fw.append(["filter", "", "-A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT"])
 
         self.fw.append(["", "", "-A NETWORK_STATS -i eth0 -o eth2 -p tcp"])
         self.fw.append(["", "", "-A NETWORK_STATS -i eth2 -o eth0 -p tcp"])
