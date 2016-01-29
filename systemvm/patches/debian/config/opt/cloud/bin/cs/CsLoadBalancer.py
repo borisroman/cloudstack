@@ -81,5 +81,6 @@ class CsLoadBalancer(CsDataBag):
             path = rules.split(':')
             ip = path[0]
             port = path[1]
-            firewall.remove(["filter", "", "-A INPUT -p tcp -m tcp -d %s --dport %s -m state --state NEW -j ACCEPT" % (ip, port)])
+            if ["filter", "", "-A INPUT -p tcp -m tcp -d %s --dport %s -m state --state NEW -j ACCEPT" % (ip, port)] in firewall:
+                firewall.remove(["filter", "", "-A INPUT -p tcp -m tcp -d %s --dport %s -m state --state NEW -j ACCEPT" % (ip, port)])
 
